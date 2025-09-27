@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Human Essay Bot - Browser Injector</title>
+    <style>
+        body {
+            font-family: 'Google Sans', Arial, sans-serif;
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #f8f9fa;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #4285f4;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .step {
+            background: #e8f0fe;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 8px;
+            border-left: 4px solid #4285f4;
+        }
+        .step h3 {
+            margin-top: 0;
+            color: #1a73e8;
+        }
+        .bookmarklet {
+            background: #f1f3f4;
+            padding: 15px;
+            border-radius: 5px;
+            font-family: monospace;
+            word-break: break-all;
+            margin: 10px 0;
+        }
+        .button {
+            background: #34a853;
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            display: block;
+            margin: 20px auto;
+            text-decoration: none;
+        }
+        .button:hover {
+            background: #2d8f47;
+        }
+        .warning {
+            background: #fef7e0;
+            border: 1px solid #fbbc04;
+            color: #b06000;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 20px 0;
+        }
+        .code {
+            background: #f1f3f4;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: monospace;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🤖 Human Essay Bot</h1>
+        <p style="text-align: center; color: #666; margin-bottom: 30px;">
+            AI-powered essay writing that works directly in your browser on Google Docs
+        </p>
+
+        <div class="warning">
+            <strong>⚠️ Important:</strong> This tool is for educational purposes. Always follow your school's academic integrity policies.
+        </div>
+
+        <div class="step">
+            <h3>Step 1: Get Your OpenAI API Key</h3>
+            <p>You'll need an OpenAI API key to use this tool:</p>
+            <ol>
+                <li>Go to <a href="https://platform.openai.com/api-keys" target="_blank">OpenAI API Keys</a></li>
+                <li>Sign up or log in to your account</li>
+                <li>Create a new API key</li>
+                <li>Copy the key (it starts with <span class="code">sk-</span>)</li>
+            </ol>
+        </div>
+
+        <div class="step">
+            <h3>Step 2: Go to Your Google Doc</h3>
+            <p>Open the Google Doc where you want to write your essay. Make sure you're logged into your Google account.</p>
+        </div>
+
+        <div class="step">
+            <h3>Step 3: Install the Essay Bot</h3>
+            <p>Choose one of these methods:</p>
+            
+            <h4>Method A: Drag & Drop (Easiest)</h4>
+            <p>Drag this button to your bookmarks bar:</p>
+            <a href="javascript:(function(){var script=document.createElement('script');script.src='https://raw.githubusercontent.com/Nadavlistingsync/human-essay-bot/main/src/browser-extension.js';document.head.appendChild(script);})();" class="button">🤖 Add Essay Bot to Bookmarks</a>
+            
+            <h4>Method B: Copy & Paste</h4>
+            <p>Copy this code and paste it in your browser's console (F12 → Console):</p>
+            <div class="bookmarklet">
+                fetch('https://raw.githubusercontent.com/Nadavlistingsync/human-essay-bot/main/src/browser-extension.js')
+                .then(response => response.text())
+                .then(code => eval(code));
+            </div>
+            
+            <h4>Method C: Manual Script Injection</h4>
+            <p>If the above methods don't work, you can manually inject the script:</p>
+            <ol>
+                <li>Press <span class="code">F12</span> to open Developer Tools</li>
+                <li>Go to the <span class="code">Console</span> tab</li>
+                <li>Paste the code from Method B and press Enter</li>
+            </ol>
+        </div>
+
+        <div class="step">
+            <h3>Step 4: Use the Essay Bot</h3>
+            <p>Once installed, you'll see a blue panel in the top-right corner of your Google Doc:</p>
+            <ol>
+                <li>Enter your essay prompt</li>
+                <li>Paste your OpenAI API key</li>
+                <li>Choose your typing speed</li>
+                <li>Click "🚀 Start Writing"</li>
+                <li>Watch as the bot types your essay naturally!</li>
+            </ol>
+        </div>
+
+        <div class="step">
+            <h3>Features</h3>
+            <ul>
+                <li>✅ Works directly in your browser on Google Docs</li>
+                <li>✅ Human-like typing with realistic delays and patterns</li>
+                <li>✅ No downloads or installations required</li>
+                <li>✅ Your API key stays private and local</li>
+                <li>✅ Works with any Google Doc (shared or private)</li>
+                <li>✅ Adjustable typing speeds</li>
+            </ul>
+        </div>
+
+        <div class="warning">
+            <strong>🔒 Privacy:</strong> Your OpenAI API key is only used locally in your browser and is never sent to our servers. All essay generation happens directly between your browser and OpenAI's API.
+        </div>
+
+        <div style="text-align: center; margin-top: 30px; color: #666; font-size: 14px;">
+            <p>Need help? Check the <a href="https://github.com/Nadavlistingsync/human-essay-bot" target="_blank">GitHub repository</a></p>
+        </div>
+    </div>
+</body>
+</html>

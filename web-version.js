@@ -16,7 +16,17 @@ app.use(express.json());
 
 // Serve the main HTML file
 app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname, 'src', 'inject.html'));
+});
+
+// Serve the original Electron-style interface
+app.get('/electron', (req, res) => {
     res.sendFile(path.join(__dirname, 'src', 'index.html'));
+});
+
+// Serve the browser extension script
+app.get('/browser-extension.js', (req, res) => {
+    res.sendFile(path.join(__dirname, 'src', 'browser-extension.js'));
 });
 
 // Real API endpoints for essay writing
@@ -72,12 +82,15 @@ class EssayBot {
             
             // Launch browser
             this.browser = await puppeteer.launch({
-                headless: true, // Run headless for web version
+                headless: false, // Show browser so user can log in
+                defaultViewport: null,
                 args: [
+                    '--start-maximized',
                     '--no-sandbox',
                     '--disable-setuid-sandbox',
                     '--disable-dev-shm-usage',
-                    '--disable-blink-features=AutomationControlled'
+                    '--disable-blink-features=AutomationControlled',
+                    '--disable-notifications'
                 ]
             });
 
@@ -109,33 +122,47 @@ class EssayBot {
 
         } catch (error) {
             console.error('Error in startWriting:', error);
+            console.error('Error details:', error.message);
+            console.error('Stack trace:', error.stack);
             if (this.browser) {
-                await this.browser.close();
+                try {
+                    await this.browser.close();
+                } catch (closeError) {
+                    console.error('Error closing browser:', closeError);
+                }
             }
             throw error;
         }
     }
 
     async navigateToGoogleDocs() {
+        console.log('Navigating to Google Docs...');
         // Navigate to Google Docs
         await this.page.goto('https://docs.google.com', { 
             waitUntil: 'networkidle2',
             timeout: 30000 
         });
 
+        console.log('Waiting for user login...');
         // Wait for user to be logged in
         await this.waitForLogin();
         
+        console.log('Navigating to document...');
         // Navigate to document
         await this.navigateToDocument();
     }
 
     async waitForLogin() {
+        console.log('Waiting for user to log in to Google...');
+        console.log('Please log in to your Google account in the browser window that opened.');
+        
         // Wait for user to manually log in
         await this.page.waitForFunction(() => {
             return document.querySelector('[data-testid="user-profile-menu"]') || 
                    document.querySelector('[aria-label*="Account"]') ||
-                   document.querySelector('.gb_Dd');
+                   document.querySelector('.gb_Dd') ||
+                   document.querySelector('[data-email]') ||
+                   document.querySelector('img[src*="googleusercontent.com"]');
         }, { timeout: 120000 });
         
         console.log('User is logged in, proceeding...');
@@ -206,12 +233,19 @@ ${JSON.stringify(this.settings.writingStyle, null, 2)}`;
     }
 
     async typeEssay(content, progressCallback) {
+        console.log('Starting to type essay...');
+        console.log('Essay content length:', content.length);
+        
         const sentences = content.split(/[.!?]+/).filter(s => s.trim().length > 0);
         let typedCharacters = 0;
         const totalCharacters = content.length;
 
+        console.log('Number of sentences to type:', sentences.length);
+
         for (let i = 0; i < sentences.length && this.isWriting; i++) {
             const sentence = sentences[i].trim() + (i < sentences.length - 1 ? '.' : '');
+            
+            console.log(`Typing sentence ${i + 1}/${sentences.length}: "${sentence.substring(0, 50)}..."`);
             
             // Type the sentence with human-like patterns
             await this.humanTyping.typeText(this.page, sentence);
@@ -228,6 +262,8 @@ ${JSON.stringify(this.settings.writingStyle, null, 2)}`;
                 currentSentence: sentence.substring(0, 50) + '...'
             });
         }
+        
+        console.log('Finished typing essay!');
     }
 }
 

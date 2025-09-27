@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Human Essay Bot - Bookmarklet</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 500px;
+            margin: 100px auto;
+            padding: 20px;
+            text-align: center;
+        }
+        .bookmarklet {
+            display: inline-block;
+            background: #4285f4;
+            color: white;
+            padding: 15px 30px;
+            text-decoration: none;
+            border-radius: 5px;
+            font-weight: bold;
+            font-size: 16px;
+            margin: 20px 0;
+        }
+        .bookmarklet:hover {
+            background: #3367d6;
+        }
+        .instructions {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 5px;
+            margin: 20px 0;
+            text-align: left;
+        }
+    </style>
+</head>
+<body>
+    <h1>🤖 Human Essay Bot</h1>
+    <p>Drag the button below to your bookmarks bar to install the Essay Bot!</p>
+    
+    <a href="javascript:(function(){var script=document.createElement('script');script.src='https://raw.githubusercontent.com/Nadavlistingsync/human-essay-bot/main/src/browser-extension.js';document.head.appendChild(script);})();" class="bookmarklet">
+        🤖 Human Essay Bot
+    </a>
+    
+    <div class="instructions">
+        <h3>How to use:</h3>
+        <ol>
+            <li>Drag the blue button above to your bookmarks bar</li>
+            <li>Go to your Google Doc</li>
+            <li>Click the bookmark to activate the Essay Bot</li>
+            <li>Enter your essay prompt and OpenAI API key</li>
+            <li>Click "Start Writing" and watch the magic happen!</li>
+        </ol>
+    </div>
+    
+    <p><small>Make sure you have an OpenAI API key ready. Get one at <a href="https://platform.openai.com/api-keys">platform.openai.com</a></small></p>
+</body>
+</html>
