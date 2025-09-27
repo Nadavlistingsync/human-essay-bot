@@ -16,7 +16,6 @@ class EssayBotRenderer {
         this.elements = {
             essayPrompt: document.getElementById('essay-prompt'),
             typingSpeed: document.getElementById('typing-speed'),
-            openaiKey: document.getElementById('openai-key'),
             documentUrl: document.getElementById('document-url'),
             uploadArea: document.getElementById('upload-area'),
             fileInput: document.getElementById('file-input'),
@@ -36,22 +35,12 @@ class EssayBotRenderer {
         this.elements.startBtn.addEventListener('click', () => this.startWriting());
         this.elements.stopBtn.addEventListener('click', () => this.stopWriting());
         
-        // Auto-save API key to localStorage
-        this.elements.openaiKey.addEventListener('input', (e) => {
-            localStorage.setItem('openai_api_key', e.target.value);
-        });
-
         // Auto-save document URL to localStorage
         this.elements.documentUrl.addEventListener('input', (e) => {
             localStorage.setItem('document_url', e.target.value);
         });
 
         // Load saved values
-        const savedKey = localStorage.getItem('openai_api_key');
-        if (savedKey) {
-            this.elements.openaiKey.value = savedKey;
-        }
-
         const savedUrl = localStorage.getItem('document_url');
         if (savedUrl) {
             this.elements.documentUrl.value = savedUrl;
@@ -148,22 +137,15 @@ class EssayBotRenderer {
         if (this.isWriting) return;
 
         const prompt = this.elements.essayPrompt.value.trim();
-        const openaiKey = this.elements.openaiKey.value.trim();
 
         if (!prompt) {
             this.updateStatus('error', 'Please enter an essay prompt.');
             return;
         }
 
-        if (!openaiKey) {
-            this.updateStatus('error', 'Please enter your OpenAI API key.');
-            return;
-        }
-
         const settings = {
             typingSpeed: this.elements.typingSpeed.value,
             writingStyle: this.writingStyle?.style || null,
-            openaiApiKey: openaiKey,
             documentUrl: this.elements.documentUrl.value.trim() || null
         };
 
@@ -206,7 +188,6 @@ class EssayBotRenderer {
         const inputs = [
             this.elements.essayPrompt,
             this.elements.typingSpeed,
-            this.elements.openaiKey,
             this.elements.documentUrl
         ];
         

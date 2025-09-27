@@ -15,7 +15,6 @@ An AI-powered desktop application that writes essays in Google Docs with human-l
 ### Prerequisites
 
 - Node.js 16+ installed
-- OpenAI API key
 - Google account access
 
 ### Installation
@@ -26,7 +25,11 @@ An AI-powered desktop application that writes essays in Google Docs with human-l
    npm install
    ```
 
-3. **Get your OpenAI API key** from [OpenAI Platform](https://platform.openai.com/api-keys)
+3. **Set up OpenAI API key** (server-side):
+   ```bash
+   cp env.example .env
+   # Edit .env and add your OpenAI API key
+   ```
 
 4. **Run the application**:
    ```bash
@@ -49,7 +52,7 @@ If your teacher shared a Google Doc with you:
 
 ### 3. Configure Settings
 - **Typing Speed**: Choose between slow, human-like, or fast typing
-- **OpenAI API Key**: Enter your API key (saved locally for future use)
+- **Note**: OpenAI API key is handled server-side - no user input needed!
 
 ### 4. Write Your Essay
 - **For existing documents**: Paste the Google Doc URL (from your teacher)

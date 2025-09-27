@@ -8,7 +8,7 @@ class EssayBot {
     this.settings = {
       typingSpeed: settings.typingSpeed || 'human-like',
       writingStyle: settings.writingStyle || null,
-      openaiApiKey: settings.openaiApiKey || process.env.OPENAI_API_KEY,
+      openaiApiKey: process.env.OPENAI_API_KEY, // Always use server-side key
       ...settings
     };
     

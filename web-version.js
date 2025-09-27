@@ -28,7 +28,7 @@ app.post('/api/start-writing', (req, res) => {
         
         if (progress >= 100) {
             clearInterval(interval);
-            res.json({ success: true, message: 'Essay completed!' });
+            res.json({ success: true, message: 'Essay completed! (Demo mode)' });
         }
     }, 1000);
 });
