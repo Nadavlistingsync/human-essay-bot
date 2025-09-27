@@ -17,6 +17,7 @@ class EssayBotRenderer {
             essayPrompt: document.getElementById('essay-prompt'),
             typingSpeed: document.getElementById('typing-speed'),
             openaiKey: document.getElementById('openai-key'),
+            documentUrl: document.getElementById('document-url'),
             uploadArea: document.getElementById('upload-area'),
             fileInput: document.getElementById('file-input'),
             stylePreview: document.getElementById('style-preview'),
@@ -40,10 +41,20 @@ class EssayBotRenderer {
             localStorage.setItem('openai_api_key', e.target.value);
         });
 
-        // Load saved API key
+        // Auto-save document URL to localStorage
+        this.elements.documentUrl.addEventListener('input', (e) => {
+            localStorage.setItem('document_url', e.target.value);
+        });
+
+        // Load saved values
         const savedKey = localStorage.getItem('openai_api_key');
         if (savedKey) {
             this.elements.openaiKey.value = savedKey;
+        }
+
+        const savedUrl = localStorage.getItem('document_url');
+        if (savedUrl) {
+            this.elements.documentUrl.value = savedUrl;
         }
     }
 
@@ -152,7 +163,8 @@ class EssayBotRenderer {
         const settings = {
             typingSpeed: this.elements.typingSpeed.value,
             writingStyle: this.writingStyle?.style || null,
-            openaiApiKey: openaiKey
+            openaiApiKey: openaiKey,
+            documentUrl: this.elements.documentUrl.value.trim() || null
         };
 
         this.isWriting = true;
@@ -194,7 +206,8 @@ class EssayBotRenderer {
         const inputs = [
             this.elements.essayPrompt,
             this.elements.typingSpeed,
-            this.elements.openaiKey
+            this.elements.openaiKey,
+            this.elements.documentUrl
         ];
         
         inputs.forEach(input => {

@@ -35,25 +35,35 @@ An AI-powered desktop application that writes essays in Google Docs with human-l
 
 ## 📖 How to Use
 
-### 1. Setup Writing Style (Optional)
+### 1. Get Your Google Doc URL (For Existing Documents)
+If your teacher shared a Google Doc with you:
+- Open the Google Doc in your browser
+- Copy the URL from the address bar
+- It should look like: `https://docs.google.com/document/d/1ABC.../edit`
+- Paste this URL into the "Google Doc URL" field
+
+### 2. Setup Writing Style (Optional)
 - Drag and drop your past writings (`.txt` or `.md` files) into the upload area
 - The AI will analyze your writing patterns, vocabulary, and style
 - This ensures the generated essay matches your unique writing voice
 
-### 2. Configure Settings
+### 3. Configure Settings
 - **Typing Speed**: Choose between slow, human-like, or fast typing
 - **OpenAI API Key**: Enter your API key (saved locally for future use)
 
-### 3. Write Your Essay
+### 4. Write Your Essay
+- **For existing documents**: Paste the Google Doc URL (from your teacher)
+- **For new documents**: Leave the URL field empty
 - Enter your essay prompt in the text area
 - Click "🚀 Start Writing Essay"
 - The bot will:
   - Open Google Docs in your browser
   - Wait for you to log in (if needed)
+  - Navigate to your existing document OR create a new one
   - Generate an essay using your writing style
   - Type it naturally into the document
 
-### 4. Monitor Progress
+### 5. Monitor Progress
 - Watch real-time progress updates
 - See current sentence being typed
 - Stop anytime with the stop button

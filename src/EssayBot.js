@@ -80,8 +80,8 @@ class EssayBot {
     // Wait for user to be logged in (we'll detect this)
     await this.waitForLogin();
     
-    // Create a new document
-    await this.createNewDocument();
+    // Navigate to the specific document or create new one
+    await this.navigateToDocument();
   }
 
   async waitForLogin() {
@@ -94,6 +94,25 @@ class EssayBot {
     }, { timeout: 120000 }); // 2 minute timeout for login
 
     console.log('User is logged in, proceeding...');
+  }
+
+  async navigateToDocument() {
+    // Check if user provided a specific document URL
+    if (this.settings.documentUrl) {
+      console.log('Navigating to specific document...');
+      await this.page.goto(this.settings.documentUrl, { 
+        waitUntil: 'networkidle2',
+        timeout: 30000 
+      });
+      
+      // Wait for document to load and focus on editor
+      await this.page.waitForSelector('[contenteditable="true"]', { timeout: 15000 });
+      await this.page.click('[contenteditable="true"]');
+      await this.page.waitForTimeout(1000);
+    } else {
+      // Create a new document as fallback
+      await this.createNewDocument();
+    }
   }
 
   async createNewDocument() {

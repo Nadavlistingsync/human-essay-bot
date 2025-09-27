@@ -38,16 +38,26 @@
                         </select>
                     </div>
 
-                    <div class="form-group">
-                        <label for="openai-key">OpenAI API Key:</label>
-                        <input 
-                            type="password" 
-                            id="openai-key" 
-                            placeholder="sk-..." 
-                            required
-                        >
-                        <small>Required for essay generation</small>
-                    </div>
+                <div class="form-group">
+                    <label for="openai-key">OpenAI API Key:</label>
+                    <input 
+                        type="password" 
+                        id="openai-key" 
+                        placeholder="sk-..." 
+                        required
+                    >
+                    <small>Required for essay generation</small>
+                </div>
+
+                <div class="form-group">
+                    <label for="document-url">Google Doc URL (Optional):</label>
+                    <input 
+                        type="url" 
+                        id="document-url" 
+                        placeholder="https://docs.google.com/document/d/..."
+                    >
+                    <small>Paste the link to your existing Google Doc. Leave empty to create a new document.</small>
+                </div>
                 </div>
 
                 <div class="writing-style-section">
