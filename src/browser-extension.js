@@ -183,6 +183,23 @@ class HumanEssayBot {
             return;
         }
 
+        // First, test if we can find and type into the Google Docs editor
+        const editor = this.findGoogleDocsEditor();
+        if (!editor) {
+            this.showStatus('Could not find Google Docs editor. Make sure you are on a Google Docs page and the document is ready.', 'error');
+            return;
+        }
+
+        // Test typing with a simple message first
+        this.showStatus('Testing typing into Google Docs...', 'info');
+        try {
+            await this.testTyping(editor);
+            this.showStatus('✓ Typing test successful! Starting essay...', 'success');
+        } catch (error) {
+            this.showStatus(`✗ Typing test failed: ${error.message}`, 'error');
+            return;
+        }
+
         this.currentPrompt = prompt;
         this.settings.typingSpeed = typingSpeed;
 
@@ -212,6 +229,70 @@ class HumanEssayBot {
             this.isWriting = false;
             this.updateUI(false);
         }
+    }
+
+    async testTyping(editor) {
+        // Test with a simple message to verify typing works
+        const testMessage = " [Bot Test - This will be deleted] ";
+        
+        // Focus and click the editor
+        editor.focus();
+        editor.click();
+        await this.randomDelay(200, 500);
+        
+        // Type the test message
+        for (let i = 0; i < testMessage.length; i++) {
+            const char = testMessage[i];
+            await this.typeCharacterInGoogleDocs(char, editor);
+            await this.randomDelay(50, 100);
+        }
+        
+        // Wait a moment then delete the test message
+        await this.randomDelay(1000, 2000);
+        
+        // Delete the test message
+        for (let i = 0; i < testMessage.length; i++) {
+            await this.simulateKeyPress('Backspace', editor);
+            await this.randomDelay(20, 50);
+        }
+    }
+
+    async simulateKeyPress(key, element) {
+        const keyCode = this.getKeyCodeFromKey(key);
+        const events = [
+            new KeyboardEvent('keydown', {
+                key: key,
+                code: keyCode,
+                keyCode: keyCode,
+                which: keyCode,
+                bubbles: true,
+                cancelable: true
+            }),
+            new KeyboardEvent('keyup', {
+                key: key,
+                code: keyCode,
+                keyCode: keyCode,
+                which: keyCode,
+                bubbles: true,
+                cancelable: true
+            })
+        ];
+
+        for (const event of events) {
+            element.dispatchEvent(event);
+            await this.randomDelay(1, 2);
+        }
+    }
+
+    getKeyCodeFromKey(key) {
+        const keyMap = {
+            'Backspace': 8,
+            'Delete': 46,
+            'Enter': 13,
+            'Space': 32,
+            'Tab': 9
+        };
+        return keyMap[key] || 0;
     }
 
     async generateEssay(prompt) {
@@ -276,29 +357,72 @@ class HumanEssayBot {
     }
 
     findGoogleDocsEditor() {
-        // Try different selectors for Google Docs editor
+        // Try different selectors for Google Docs editor (in order of preference)
         const selectors = [
+            // Most reliable Google Docs selectors
             '[contenteditable="true"]',
             '.kix-lineview-text-block',
             '.kix-wordhtmlgenerator-word',
             '[role="textbox"]',
-            '.docs-texteventtarget-iframe'
+            '.docs-texteventtarget-iframe',
+            // Fallback selectors
+            '[contenteditable]',
+            '.kix-lineview',
+            '.kix-page-column',
+            '#docs-editor',
+            '[data-testid="editor"]'
         ];
 
         for (const selector of selectors) {
             const element = document.querySelector(selector);
-            if (element) {
+            if (element && this.isEditableElement(element)) {
+                console.log(`Found Google Docs editor with selector: ${selector}`);
                 return element;
             }
         }
 
+        // Last resort: try to find any contenteditable element
+        const contentEditableElements = document.querySelectorAll('[contenteditable]');
+        for (const element of contentEditableElements) {
+            if (this.isEditableElement(element)) {
+                console.log('Found contenteditable element as fallback');
+                return element;
+            }
+        }
+
+        console.error('Could not find Google Docs editor');
         return null;
+    }
+
+    isEditableElement(element) {
+        // Check if element is actually editable
+        if (!element) return false;
+        
+        // Check if it's visible
+        const style = window.getComputedStyle(element);
+        if (style.display === 'none' || style.visibility === 'hidden') return false;
+        
+        // Check if it's contenteditable
+        if (element.contentEditable === 'true') return true;
+        
+        // Check if it has the right attributes
+        if (element.getAttribute('contenteditable') === 'true') return true;
+        
+        // Check if it's a text input
+        if (element.tagName === 'INPUT' && element.type === 'text') return true;
+        if (element.tagName === 'TEXTAREA') return true;
+        
+        return false;
     }
 
     async typeText(element, text) {
         // Make sure the element is focused and visible
         element.focus();
+        element.click(); // Click to ensure focus
         element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        
+        // Wait for focus to be established
+        await this.randomDelay(100, 300);
         
         // Show a typing cursor
         this.showTypingCursor(element);
@@ -306,8 +430,8 @@ class HumanEssayBot {
         for (let i = 0; i < text.length && this.isWriting; i++) {
             const char = text[i];
 
-            // Simulate realistic typing with cursor movement
-            await this.simulateRealisticTyping(char, element);
+            // Use multiple methods to ensure typing works in Google Docs
+            await this.typeCharacterInGoogleDocs(char, element);
             
             // Variable delay between characters
             await this.getTypingDelay(char);
@@ -377,8 +501,47 @@ class HumanEssayBot {
         this.typingCursor.style.top = `${y}px`;
     }
 
-    async simulateRealisticTyping(char, element) {
-        // Simulate actual keyboard events that Google Docs will recognize
+    async typeCharacterInGoogleDocs(char, element) {
+        // Method 1: Try execCommand (most reliable for contenteditable)
+        try {
+            const success = document.execCommand('insertText', false, char);
+            if (success) {
+                this.showTypingFeedback(char, element);
+                this.updateCursorPosition(element);
+                return;
+            }
+        } catch (e) {
+            console.log('execCommand failed, trying other methods');
+        }
+
+        // Method 2: Direct text insertion for contenteditable
+        try {
+            const selection = window.getSelection();
+            if (selection.rangeCount > 0) {
+                const range = selection.getRangeAt(0);
+                range.deleteContents();
+                range.insertNode(document.createTextNode(char));
+                range.collapse(false);
+                selection.removeAllRanges();
+                selection.addRange(range);
+                
+                // Trigger input event
+                element.dispatchEvent(new Event('input', { bubbles: true }));
+                
+                this.showTypingFeedback(char, element);
+                this.updateCursorPosition(element);
+                return;
+            }
+        } catch (e) {
+            console.log('Direct text insertion failed, trying keyboard events');
+        }
+
+        // Method 3: Simulate keyboard events (fallback)
+        await this.simulateKeyboardEvents(char, element);
+    }
+
+    async simulateKeyboardEvents(char, element) {
+        // Create comprehensive keyboard events
         const events = [
             new KeyboardEvent('keydown', {
                 key: char,
@@ -395,53 +558,51 @@ class HumanEssayBot {
                 which: char.charCodeAt(0),
                 bubbles: true,
                 cancelable: true
-            }),
-            new KeyboardEvent('keyup', {
-                key: char,
-                code: this.getKeyCode(char),
-                keyCode: char.charCodeAt(0),
-                which: char.charCodeAt(0),
-                bubbles: true,
-                cancelable: true
             })
         ];
 
-        // Dispatch events in sequence
+        // Dispatch keydown and keypress
         for (const event of events) {
             element.dispatchEvent(event);
-            await this.randomDelay(1, 3); // Small delay between keydown, keypress, keyup
+            await this.randomDelay(1, 2);
         }
 
-        // Trigger input event for Google Docs
+        // Insert the character manually
+        try {
+            const selection = window.getSelection();
+            if (selection.rangeCount > 0) {
+                const range = selection.getRangeAt(0);
+                range.deleteContents();
+                range.insertNode(document.createTextNode(char));
+                range.collapse(false);
+                selection.removeAllRanges();
+                selection.addRange(range);
+            }
+        } catch (e) {
+            console.log('Manual insertion failed');
+        }
+
+        // Dispatch keyup
+        const keyupEvent = new KeyboardEvent('keyup', {
+            key: char,
+            code: this.getKeyCode(char),
+            keyCode: char.charCodeAt(0),
+            which: char.charCodeAt(0),
+            bubbles: true,
+            cancelable: true
+        });
+        element.dispatchEvent(keyupEvent);
+
+        // Trigger input event
         const inputEvent = new InputEvent('input', {
             data: char,
             inputType: 'insertText',
             bubbles: true,
             cancelable: true
         });
-
         element.dispatchEvent(inputEvent);
 
-        // Also trigger composition events for better compatibility
-        const compositionStart = new CompositionEvent('compositionstart', {
-            bubbles: true,
-            cancelable: true
-        });
-        
-        const compositionEnd = new CompositionEvent('compositionend', {
-            data: char,
-            bubbles: true,
-            cancelable: true
-        });
-
-        element.dispatchEvent(compositionStart);
-        await this.randomDelay(1, 2);
-        element.dispatchEvent(compositionEnd);
-
-        // Visual feedback - briefly highlight the character being typed
         this.showTypingFeedback(char, element);
-        
-        // Update cursor position after typing
         this.updateCursorPosition(element);
     }
 
