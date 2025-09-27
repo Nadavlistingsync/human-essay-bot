@@ -267,6 +267,49 @@ ${JSON.stringify(this.settings.writingStyle, null, 2)}`;
     }
 }
 
+// Essay generation endpoint for browser extension
+app.post('/api/generate-essay', async (req, res) => {
+    console.log('Generating essay for browser extension:', req.body);
+    
+    try {
+        const { prompt, settings } = req.body;
+        
+        if (!prompt) {
+            return res.json({ success: false, error: 'No prompt provided' });
+        }
+
+        // Create a simple essay generator
+        const openai = new OpenAI({
+            apiKey: process.env.OPENAI_API_KEY
+        });
+
+        const systemPrompt = `You are a helpful assistant that writes academic essays. Write in a natural, human-like style with the following characteristics:
+- Use varied sentence lengths and structures
+- Include natural transitions between ideas
+- Write in a conversational yet academic tone
+- Use appropriate vocabulary for the topic
+- Include some personal insights or examples where relevant
+- Write in a way that sounds like a real student wrote it`;
+
+        const completion = await openai.chat.completions.create({
+            model: "gpt-4",
+            messages: [
+                { role: "system", content: systemPrompt },
+                { role: "user", content: prompt }
+            ],
+            max_tokens: 2000,
+            temperature: 0.7
+        });
+
+        const content = completion.choices[0].message.content;
+        res.json({ success: true, content });
+        
+    } catch (error) {
+        console.error('Error generating essay:', error);
+        res.json({ success: false, error: error.message });
+    }
+});
+
 // Real style analysis endpoint
 app.post('/api/analyze-style', async (req, res) => {
     console.log('Analyzing writing style...');

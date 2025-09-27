@@ -83,15 +83,10 @@ class HumanEssayBot {
                     </div>
 
                     <div style="margin-bottom: 15px;">
-                        <label style="display: block; margin-bottom: 5px; font-weight: 500;">OpenAI API Key:</label>
-                        <input type="password" id="openai-key" placeholder="sk-..." style="
-                            width: 100%;
-                            padding: 8px;
-                            border: 1px solid #ddd;
-                            border-radius: 5px;
-                            font-family: inherit;
-                        ">
-                        <small style="color: #666; font-size: 12px;">Your API key is used locally and never stored</small>
+                        <div style="background: #e8f5e8; padding: 10px; border-radius: 5px; border-left: 4px solid #34a853;">
+                            <div style="font-weight: 500; color: #2d5a2d; margin-bottom: 5px;">✅ API Key Included</div>
+                            <div style="font-size: 12px; color: #666;">No API key needed - we provide the OpenAI access for you!</div>
+                        </div>
                     </div>
 
                     <div style="display: flex; gap: 10px;">
@@ -181,16 +176,10 @@ class HumanEssayBot {
 
     async startWriting() {
         const prompt = document.getElementById('essay-prompt').value.trim();
-        const apiKey = document.getElementById('openai-key').value.trim();
         const typingSpeed = document.getElementById('typing-speed').value;
 
         if (!prompt) {
             this.showStatus('Please enter an essay prompt.', 'error');
-            return;
-        }
-
-        if (!apiKey) {
-            this.showStatus('Please enter your OpenAI API key.', 'error');
             return;
         }
 
@@ -203,8 +192,8 @@ class HumanEssayBot {
         this.updateProgress(0, 'Generating essay...');
 
         try {
-            // Generate essay using OpenAI
-            const essayContent = await this.generateEssay(prompt, apiKey);
+            // Generate essay using our server (which has the API key)
+            const essayContent = await this.generateEssay(prompt);
             
             if (!this.isWriting) return; // Check if stopped
 
@@ -225,37 +214,33 @@ class HumanEssayBot {
         }
     }
 
-    async generateEssay(prompt, apiKey) {
-        const response = await fetch('https://api.openai.com/v1/chat/completions', {
+    async generateEssay(prompt) {
+        // Get the current domain to determine the server URL
+        const serverUrl = window.location.hostname === 'localhost' 
+            ? 'http://localhost:3000' 
+            : window.location.origin;
+
+        const response = await fetch(`${serverUrl}/api/generate-essay`, {
             method: 'POST',
             headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${apiKey}`
+                'Content-Type': 'application/json'
             },
             body: JSON.stringify({
-                model: 'gpt-4',
-                messages: [
-                    {
-                        role: 'system',
-                        content: 'You are a helpful assistant that writes academic essays. Write in a natural, human-like style with varied sentence lengths and structures. Include natural transitions between ideas and write in a conversational yet academic tone.'
-                    },
-                    {
-                        role: 'user',
-                        content: prompt
-                    }
-                ],
-                max_tokens: 2000,
-                temperature: 0.7
+                prompt: prompt,
+                settings: {
+                    typingSpeed: this.settings.typingSpeed,
+                    writingStyle: this.settings.writingStyle
+                }
             })
         });
 
         if (!response.ok) {
             const errorData = await response.json();
-            throw new Error(`OpenAI API error: ${errorData.error?.message || 'Unknown error'}`);
+            throw new Error(errorData.error || 'Failed to generate essay');
         }
 
         const data = await response.json();
-        return data.choices[0].message.content;
+        return data.content;
     }
 
     async typeEssay(content) {
@@ -311,40 +296,284 @@ class HumanEssayBot {
     }
 
     async typeText(element, text) {
+        // Make sure the element is focused and visible
+        element.focus();
+        element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        
+        // Show a typing cursor
+        this.showTypingCursor(element);
+        
         for (let i = 0; i < text.length && this.isWriting; i++) {
             const char = text[i];
 
-            // Simulate realistic typing
-            await this.simulateTyping(char, element);
+            // Simulate realistic typing with cursor movement
+            await this.simulateRealisticTyping(char, element);
             
             // Variable delay between characters
             await this.getTypingDelay(char);
+            
+            // Occasionally pause to "think" (like a human would)
+            if (this.shouldPauseToThink(char, i, text)) {
+                await this.thinkingPause();
+            }
+            
+            // Update progress more frequently for better feedback
+            if (i % 10 === 0) {
+                const progress = 50 + Math.round((i / text.length) * 50);
+                this.updateProgress(progress, `Typing: ${Math.round((i/text.length)*100)}% complete`);
+            }
+        }
+        
+        // Hide typing cursor when done
+        this.hideTypingCursor();
+    }
+
+    showTypingCursor(element) {
+        // Create a blinking cursor indicator
+        this.typingCursor = document.createElement('div');
+        this.typingCursor.id = 'human-essay-bot-cursor';
+        this.typingCursor.style.cssText = `
+            position: fixed;
+            width: 2px;
+            height: 20px;
+            background: #4285f4;
+            z-index: 10000;
+            animation: cursorBlink 1s infinite;
+            pointer-events: none;
+        `;
+        
+        document.body.appendChild(this.typingCursor);
+        this.updateCursorPosition(element);
+    }
+
+    hideTypingCursor() {
+        if (this.typingCursor && this.typingCursor.parentNode) {
+            this.typingCursor.parentNode.removeChild(this.typingCursor);
+            this.typingCursor = null;
         }
     }
 
-    async simulateTyping(char, element) {
-        // Create a typing event
-        const event = new KeyboardEvent('keydown', {
-            key: char,
-            code: `Key${char.toUpperCase()}`,
-            keyCode: char.charCodeAt(0),
-            which: char.charCodeAt(0)
-        });
+    updateCursorPosition(element) {
+        if (!this.typingCursor) return;
+        
+        // Try to get the current cursor position
+        const selection = window.getSelection();
+        let x = window.innerWidth / 2;
+        let y = window.innerHeight / 2;
 
-        element.dispatchEvent(event);
+        if (selection.rangeCount > 0) {
+            const range = selection.getRangeAt(0);
+            const rect = range.getBoundingClientRect();
+            x = rect.right;
+            y = rect.top;
+        } else {
+            // Fallback to element position
+            const rect = element.getBoundingClientRect();
+            x = rect.left + 10;
+            y = rect.top + 10;
+        }
 
-        // Also trigger input event for Google Docs
+        this.typingCursor.style.left = `${x}px`;
+        this.typingCursor.style.top = `${y}px`;
+    }
+
+    async simulateRealisticTyping(char, element) {
+        // Simulate actual keyboard events that Google Docs will recognize
+        const events = [
+            new KeyboardEvent('keydown', {
+                key: char,
+                code: this.getKeyCode(char),
+                keyCode: char.charCodeAt(0),
+                which: char.charCodeAt(0),
+                bubbles: true,
+                cancelable: true
+            }),
+            new KeyboardEvent('keypress', {
+                key: char,
+                code: this.getKeyCode(char),
+                keyCode: char.charCodeAt(0),
+                which: char.charCodeAt(0),
+                bubbles: true,
+                cancelable: true
+            }),
+            new KeyboardEvent('keyup', {
+                key: char,
+                code: this.getKeyCode(char),
+                keyCode: char.charCodeAt(0),
+                which: char.charCodeAt(0),
+                bubbles: true,
+                cancelable: true
+            })
+        ];
+
+        // Dispatch events in sequence
+        for (const event of events) {
+            element.dispatchEvent(event);
+            await this.randomDelay(1, 3); // Small delay between keydown, keypress, keyup
+        }
+
+        // Trigger input event for Google Docs
         const inputEvent = new InputEvent('input', {
             data: char,
-            inputType: 'insertText'
+            inputType: 'insertText',
+            bubbles: true,
+            cancelable: true
         });
 
         element.dispatchEvent(inputEvent);
 
-        // Update the element's content
-        if (element.contentEditable === 'true') {
-            element.textContent += char;
+        // Also trigger composition events for better compatibility
+        const compositionStart = new CompositionEvent('compositionstart', {
+            bubbles: true,
+            cancelable: true
+        });
+        
+        const compositionEnd = new CompositionEvent('compositionend', {
+            data: char,
+            bubbles: true,
+            cancelable: true
+        });
+
+        element.dispatchEvent(compositionStart);
+        await this.randomDelay(1, 2);
+        element.dispatchEvent(compositionEnd);
+
+        // Visual feedback - briefly highlight the character being typed
+        this.showTypingFeedback(char, element);
+        
+        // Update cursor position after typing
+        this.updateCursorPosition(element);
+    }
+
+    getKeyCode(char) {
+        // Map characters to proper key codes
+        if (char === ' ') return 'Space';
+        if (char === '.') return 'Period';
+        if (char === ',') return 'Comma';
+        if (char === '!') return 'Digit1';
+        if (char === '?') return 'Slash';
+        if (char.match(/[A-Z]/)) return `Key${char}`;
+        if (char.match(/[a-z]/)) return `Key${char.toUpperCase()}`;
+        if (char.match(/[0-9]/)) return `Digit${char}`;
+        return `Key${char.toUpperCase()}`;
+    }
+
+    showTypingFeedback(char, element) {
+        // Create a more prominent visual indicator
+        const indicator = document.createElement('div');
+        indicator.style.cssText = `
+            position: fixed;
+            background: linear-gradient(45deg, #4285f4, #34a853);
+            color: white;
+            font-weight: bold;
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-size: 14px;
+            pointer-events: none;
+            z-index: 10001;
+            animation: typingGlow 0.4s ease-out;
+            box-shadow: 0 4px 12px rgba(66, 133, 244, 0.4);
+            border: 2px solid white;
+        `;
+        
+        indicator.textContent = char;
+        
+        // Add enhanced CSS animation
+        if (!document.getElementById('typing-animation-style')) {
+            const style = document.createElement('style');
+            style.id = 'typing-animation-style';
+            style.textContent = `
+                @keyframes typingGlow {
+                    0% { 
+                        opacity: 0; 
+                        transform: scale(0.5) translateY(20px); 
+                    }
+                    30% { 
+                        opacity: 1; 
+                        transform: scale(1.2) translateY(-10px); 
+                    }
+                    70% { 
+                        opacity: 1; 
+                        transform: scale(1) translateY(0px); 
+                    }
+                    100% { 
+                        opacity: 0; 
+                        transform: scale(0.8) translateY(-20px); 
+                    }
+                }
+                @keyframes cursorBlink {
+                    0%, 50% { opacity: 1; }
+                    51%, 100% { opacity: 0; }
+                }
+            `;
+            document.head.appendChild(style);
         }
+        
+        // Position the indicator near the current cursor position
+        this.positionTypingIndicator(indicator, element);
+        
+        document.body.appendChild(indicator);
+        
+        // Remove after animation
+        setTimeout(() => {
+            if (indicator.parentNode) {
+                indicator.parentNode.removeChild(indicator);
+            }
+        }, 400);
+    }
+
+    positionTypingIndicator(indicator, element) {
+        // Try to get the current cursor position
+        const selection = window.getSelection();
+        let x = window.innerWidth / 2; // Default to center
+        let y = window.innerHeight / 2;
+
+        if (selection.rangeCount > 0) {
+            const range = selection.getRangeAt(0);
+            const rect = range.getBoundingClientRect();
+            x = rect.right + 10;
+            y = rect.top - 10;
+        } else {
+            // Fallback to element position
+            const rect = element.getBoundingClientRect();
+            x = rect.left + 20;
+            y = rect.top - 30;
+        }
+
+        // Ensure indicator stays on screen
+        x = Math.max(10, Math.min(x, window.innerWidth - 50));
+        y = Math.max(10, Math.min(y, window.innerHeight - 50));
+
+        indicator.style.left = `${x}px`;
+        indicator.style.top = `${y}px`;
+    }
+
+    shouldPauseToThink(char, index, text) {
+        // Pause after periods, question marks, exclamation points
+        if (char === '.' || char === '!' || char === '?') {
+            return this.randomInt(1, 100) <= 20; // 20% chance
+        }
+        
+        // Pause after commas
+        if (char === ',') {
+            return this.randomInt(1, 100) <= 10; // 10% chance
+        }
+        
+        // Pause after longer words
+        const words = text.substring(0, index + 1).split(' ');
+        const lastWord = words[words.length - 1];
+        if (lastWord.length > 8) {
+            return this.randomInt(1, 100) <= 5; // 5% chance
+        }
+        
+        return false;
+    }
+
+    async thinkingPause() {
+        // Simulate human thinking pause
+        const pauseDuration = this.randomInt(800, 2500);
+        this.updateProgress(null, `Thinking... (${Math.round(pauseDuration/1000)}s pause)`);
+        await this.randomDelay(pauseDuration, pauseDuration + 500);
     }
 
     async getTypingDelay(char) {
