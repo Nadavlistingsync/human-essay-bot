@@ -1,157 +1,162 @@
-# 🤖 Human Essay Bot
+# Human Essay Bot - Web App
 
-An AI-powered desktop application that writes essays in Google Docs with human-like typing patterns and writing styles.
+AI-powered essay writing bot that types like a human in Google Docs. This web application helps students write essays with natural, human-like typing patterns and integrates seamlessly with Google Docs.
 
-## ✨ Features
+## Features
 
-- **Human-like Typing**: Realistic typing speeds, pauses, and occasional typos with corrections
-- **Writing Style Learning**: Upload your past writings to learn and mimic your unique writing style
-- **Seamless Integration**: Works directly in Google Docs using your account
-- **Anti-Detection**: Natural behavior patterns that appear completely human
-- **Easy Interface**: Simple drag-and-drop prompt input with one-click operation
+- 🌐 **Web-Based Application**: No downloads required - runs directly in your browser
+- 🤖 **AI-Powered Essay Generation**: Uses OpenAI's GPT-4 to generate high-quality essays
+- ⌨️ **Human-Like Typing**: Simulates natural typing patterns with realistic delays, typos, and corrections
+- 📝 **Google Docs Integration**: Types directly into existing Google Docs or creates new ones
+- 🎨 **Writing Style Learning**: Analyzes your past writings to match your personal style
+- ⚙️ **Customizable Settings**: Adjust typing speed and other preferences
+- 💾 **Auto-Save Settings**: Remembers your preferences between sessions
 
-## 🚀 Quick Start
+## Quick Start
 
-### Prerequisites
-
-- Node.js 16+ installed
-- Google account access
-
-### Installation
-
-1. **Clone or download** this repository
-2. **Install dependencies**:
+1. **Start the Web App**:
    ```bash
-   npm install
+   npm start
    ```
 
-3. **Set up OpenAI API key** (server-side):
+2. **Open in Browser**:
+   - Go to `http://localhost:3000`
+   - No installation required!
+
+3. **Set Up API Key** (One-time setup):
    ```bash
    cp env.example .env
    # Edit .env and add your OpenAI API key
    ```
 
-4. **Run the application**:
-   ```bash
-   npm start
-   ```
+## How to Use with Teacher's Document
 
-## 📖 How to Use
+1. **Get the Google Doc URL**: 
+   - Open the Google Doc your teacher assigned
+   - Copy the URL from your browser's address bar
+   - It should look like: `https://docs.google.com/document/d/1ABC.../edit`
 
-### 1. Get Your Google Doc URL (For Existing Documents)
-If your teacher shared a Google Doc with you:
-- Open the Google Doc in your browser
-- Copy the URL from the address bar
-- It should look like: `https://docs.google.com/document/d/1ABC.../edit`
-- Paste this URL into the "Google Doc URL" field
+2. **Paste in the Web App**:
+   - Paste this URL in the "Google Doc URL" field
+   - The bot will navigate to your document and type directly into it
 
-### 2. Setup Writing Style (Optional)
-- Drag and drop your past writings (`.txt` or `.md` files) into the upload area
-- The AI will analyze your writing patterns, vocabulary, and style
-- This ensures the generated essay matches your unique writing voice
+3. **Start Writing**:
+   - Enter your essay prompt
+   - Click "Start Writing Essay"
+   - The bot will open the document and begin typing like a human would
 
-### 3. Configure Settings
-- **Typing Speed**: Choose between slow, human-like, or fast typing
-- **Note**: OpenAI API key is handled server-side - no user input needed!
+## Writing Style Learning
 
-### 4. Write Your Essay
-- **For existing documents**: Paste the Google Doc URL (from your teacher)
-- **For new documents**: Leave the URL field empty
-- Enter your essay prompt in the text area
-- Click "🚀 Start Writing Essay"
-- The bot will:
-  - Open Google Docs in your browser
-  - Wait for you to log in (if needed)
-  - Navigate to your existing document OR create a new one
-  - Generate an essay using your writing style
-  - Type it naturally into the document
+1. **Upload Past Writings**:
+   - Drag and drop your previous essays or papers
+   - Or click to upload .txt or .md files
+   - The AI will analyze your writing style
 
-### 5. Monitor Progress
-- Watch real-time progress updates
-- See current sentence being typed
-- Stop anytime with the stop button
+2. **Style Analysis**:
+   - The app detects your formality level
+   - Analyzes sentence structure and vocabulary
+   - Matches your personal writing tone
 
-## 🛠️ Building Executables
+3. **Automatic Style Matching**:
+   - New essays will be written in your style
+   - Maintains consistency with your past work
+   - Helps avoid AI detection
 
-### Build for All Platforms
-```bash
-npm run build
+## Configuration
+
+### Environment Variables
+
+Create a `.env` file in the project root:
+
+```env
+# OpenAI API Configuration (Required)
+OPENAI_API_KEY=your_openai_api_key_here
+
+# Optional: Custom settings
+DEFAULT_TYPING_SPEED=human-like
+DEFAULT_BROWSER_TIMEOUT=30000
 ```
 
-### Build for Specific Platform
+### Typing Speed Options
+
+- **Human-like** (Recommended): Natural typing with realistic pauses
+- **Slow & Deliberate**: More thoughtful, slower typing
+- **Fast Typist**: Quick typing for experienced typists
+
+## Usage Instructions
+
+1. **Enter Essay Prompt**: Describe what you want to write about
+2. **Configure Settings**: Choose typing speed and upload writing samples
+3. **Add Google Doc URL**: Paste your teacher's document link (optional)
+4. **Start Writing**: Click the button and watch the magic happen!
+
+## Technical Details
+
+- **Backend**: Node.js with Express
+- **Browser Automation**: Puppeteer for Google Docs interaction
+- **AI**: OpenAI GPT-4 for essay generation
+- **Frontend**: Vanilla JavaScript with modern CSS
+- **File Handling**: Drag-and-drop support for style analysis
+
+## Installation
+
 ```bash
-# Windows
-npm run build-win
+# Clone the repository
+git clone <repository-url>
+cd human-essay-bot
 
-# macOS
-npm run build-mac
+# Install dependencies
+npm install
 
-# Linux
-npm run build-linux
+# Set up environment
+cp env.example .env
+# Edit .env with your OpenAI API key
+
+# Start the web app
+npm start
 ```
 
-Built executables will be in the `dist/` folder.
+## Scripts
 
-## 🔧 Technical Details
+- `npm start` - Start the web application
+- `npm run start-desktop` - Start the desktop Electron version
+- `npm run build` - Build desktop app for distribution
 
-### Architecture
-- **Electron**: Desktop application framework
-- **Puppeteer**: Browser automation for Google Docs
-- **OpenAI GPT-4**: Essay generation with style learning
-- **Human Typing Simulation**: Realistic typing patterns and delays
+## Important Notes
 
-### Anti-Detection Features
-- Variable typing speeds (60-120 WPM)
-- Natural pauses between sentences and words
-- Occasional typos with backspace corrections
-- Human-like mouse movements and clicks
-- Realistic browsing patterns
-- Session management that appears natural
+⚠️ **Educational Use Only**: This tool is designed for educational purposes. Always follow your institution's academic integrity policies.
 
-### Writing Style Analysis
-- Vocabulary richness and common words
-- Sentence structure and complexity
-- Tone analysis (formal vs informal)
-- Common phrases and expressions
-- Paragraph structure patterns
+🔐 **Privacy**: Your OpenAI API key is stored server-side and never shared. Your writing samples are analyzed locally.
 
-## ⚠️ Important Notes
+🌐 **Browser Compatibility**: Works best with Chrome, Firefox, Safari, and Edge.
 
-- **Educational Use Only**: This tool is designed for educational purposes
-- **Academic Integrity**: Always follow your institution's academic integrity guidelines
-- **API Costs**: OpenAI API usage incurs costs based on token usage
-- **Account Safety**: The bot uses your existing Google account - you maintain full control
-
-## 🐛 Troubleshooting
+## Troubleshooting
 
 ### Common Issues
 
-**"Failed to analyze writing style"**
-- Ensure uploaded files are `.txt` or `.md` format
-- Check that files contain readable text content
+1. **"OpenAI API key not provided"**:
+   - Make sure your `.env` file exists and contains a valid API key
+   - Restart the server after adding the key
 
-**"OpenAI API Error"**
-- Verify your API key is correct and has credits
-- Check your internet connection
+2. **Browser doesn't open**:
+   - Check if Chrome/Chromium is installed
+   - The app runs headless by default for security
 
-**"Google Docs not loading"**
-- Ensure you have a stable internet connection
-- Try logging into Google manually first
-- Check if Google Docs is accessible in your region
+3. **Google Docs access denied**:
+   - Make sure you're logged into Google in your default browser
+   - Check if the document URL is correct and accessible
 
-**"Typing not working"**
-- Make sure you're logged into Google Docs
-- Ensure the document editor is focused
-- Try refreshing the page and restarting
+### Getting Help
 
-## 📝 License
+If you encounter issues:
+1. Check the console logs in your browser (F12)
+2. Check the server logs in your terminal
+3. Ensure all dependencies are installed correctly
 
-MIT License - See LICENSE file for details.
+## License
 
-## 🤝 Contributing
+MIT License - Use responsibly and follow academic integrity guidelines.
 
-Contributions are welcome! Please feel free to submit issues, feature requests, or pull requests.
+---
 
-## ⚖️ Disclaimer
-
-This software is provided for educational purposes only. Users are responsible for ensuring their use complies with academic integrity policies and applicable laws. The developers are not responsible for any misuse of this software.
+**Remember**: This tool is designed to help students learn and improve their writing skills. Always use it ethically and in accordance with your school's policies.
