@@ -14,6 +14,24 @@ AI-powered essay writing bot that types like a human in Google Docs. This web ap
 
 ## Quick Start
 
+### For Students (Browser-Based - Recommended)
+
+1. **Go to the Essay Bot page**:
+   - Visit `http://localhost:3000` (if running locally)
+   - Or use the GitHub Pages version: `https://nadavlistingsync.github.io/human-essay-bot`
+
+2. **Install the Browser Extension**:
+   - Drag the blue "🤖 Human Essay Bot" button to your bookmarks bar
+   - Or copy the JavaScript code and paste it in your browser console
+
+3. **Use on Google Docs**:
+   - Go to your Google Doc
+   - Click the bookmark to activate the Essay Bot
+   - Enter your essay prompt and OpenAI API key
+   - Click "Start Writing" and watch it type naturally!
+
+### For Developers (Local Setup)
+
 1. **Start the Web App**:
    ```bash
    npm start
@@ -30,6 +48,25 @@ AI-powered essay writing bot that types like a human in Google Docs. This web ap
    ```
 
 ## How to Use with Teacher's Document
+
+### Browser-Based Method (Recommended for Students)
+
+1. **Go to Your Google Doc**: 
+   - Open the Google Doc your teacher assigned
+   - Make sure you're logged into your Google account
+
+2. **Activate the Essay Bot**:
+   - Click the "🤖 Human Essay Bot" bookmark in your bookmarks bar
+   - Or paste the JavaScript code in your browser console (F12)
+
+3. **Write Your Essay**:
+   - Enter your essay prompt in the blue panel that appears
+   - Paste your OpenAI API key
+   - Choose your typing speed
+   - Click "🚀 Start Writing"
+   - Watch as the bot types naturally into your document!
+
+### Server-Based Method (For Advanced Users)
 
 1. **Get the Google Doc URL**: 
    - Open the Google Doc your teacher assigned
