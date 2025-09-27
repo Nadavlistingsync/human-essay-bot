@@ -1,0 +1,54 @@
+{
+  "name": "human-essay-bot",
+  "version": "1.0.0",
+  "description": "AI-powered essay writing bot that types like a human in Google Docs",
+  "main": "electron/main.js",
+  "homepage": "./",
+  "scripts": {
+    "start": "electron .",
+    "dev": "electron . --dev",
+    "build": "electron-builder",
+    "build-win": "electron-builder --win",
+    "build-mac": "electron-builder --mac",
+    "build-linux": "electron-builder --linux",
+    "dist": "npm run build && electron-builder --publish=never"
+  },
+  "dependencies": {
+    "puppeteer": "^21.5.2",
+    "openai": "^4.20.1",
+    "dotenv": "^16.3.1",
+    "random-js": "^2.1.0"
+  },
+  "devDependencies": {
+    "electron": "^28.0.0",
+    "electron-builder": "^24.6.4",
+    "nodemon": "^3.0.2"
+  },
+  "build": {
+    "appId": "com.humanessaybot.app",
+    "productName": "Human Essay Bot",
+    "directories": {
+      "output": "dist"
+    },
+    "files": [
+      "electron/**/*",
+      "src/**/*",
+      "node_modules/**/*",
+      "package.json"
+    ],
+    "mac": {
+      "category": "public.app-category.productivity",
+      "target": "dmg"
+    },
+    "win": {
+      "target": "nsis",
+      "icon": "assets/icon.ico"
+    },
+    "linux": {
+      "target": "AppImage"
+    }
+  },
+  "keywords": ["ai", "essay", "typing", "bot", "google-docs", "desktop", "electron"],
+  "author": "Your Name",
+  "license": "MIT"
+}

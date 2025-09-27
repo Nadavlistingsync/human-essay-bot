@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Human Essay Bot</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <div class="logo">
+                <h1>🤖 Human Essay Bot</h1>
+                <p>AI-powered essay writing that types like a human</p>
+            </div>
+        </header>
+
+        <main class="main-content">
+            <div class="input-section">
+                <div class="form-group">
+                    <label for="essay-prompt">📝 Essay Prompt:</label>
+                    <textarea 
+                        id="essay-prompt" 
+                        placeholder="Write an essay about artificial intelligence and its impact on education..."
+                        rows="4"
+                    ></textarea>
+                </div>
+
+                <div class="settings-section">
+                    <h3>⚙️ Settings</h3>
+                    
+                    <div class="form-group">
+                        <label for="typing-speed">Typing Speed:</label>
+                        <select id="typing-speed">
+                            <option value="human-like">Human-like (Recommended)</option>
+                            <option value="slow">Slow & Deliberate</option>
+                            <option value="fast">Fast Typist</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="openai-key">OpenAI API Key:</label>
+                        <input 
+                            type="password" 
+                            id="openai-key" 
+                            placeholder="sk-..." 
+                            required
+                        >
+                        <small>Required for essay generation</small>
+                    </div>
+                </div>
+
+                <div class="writing-style-section">
+                    <h3>📚 Writing Style Learning</h3>
+                    
+                    <div class="upload-area" id="upload-area">
+                        <div class="upload-content">
+                            <div class="upload-icon">📄</div>
+                            <p>Drop your past writings here or click to upload</p>
+                            <small>Supports .txt and .md files</small>
+                        </div>
+                        <input type="file" id="file-input" accept=".txt,.md" multiple hidden>
+                    </div>
+
+                    <div class="style-preview" id="style-preview" style="display: none;">
+                        <h4>Detected Writing Style:</h4>
+                        <div class="style-details" id="style-details"></div>
+                    </div>
+                </div>
+
+                <div class="action-section">
+                    <button id="start-btn" class="btn btn-primary">
+                        🚀 Start Writing Essay
+                    </button>
+                    <button id="stop-btn" class="btn btn-danger" style="display: none;">
+                        ⏹️ Stop Writing
+                    </button>
+                </div>
+            </div>
+
+            <div class="progress-section" id="progress-section" style="display: none;">
+                <h3>📊 Progress</h3>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progress-fill"></div>
+                </div>
+                <div class="progress-text" id="progress-text">Initializing...</div>
+                <div class="current-sentence" id="current-sentence"></div>
+            </div>
+
+            <div class="status-section">
+                <div class="status-card" id="status-card">
+                    <div class="status-icon">💡</div>
+                    <div class="status-content">
+                        <h4>Ready to Write</h4>
+                        <p>Enter your essay prompt and click "Start Writing Essay" to begin.</p>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <footer class="footer">
+            <div class="footer-content">
+                <p>⚠️ This tool is for educational purposes. Use responsibly and follow academic integrity guidelines.</p>
+            </div>
+        </footer>
+    </div>
+
+    <script src="renderer.js"></script>
+</body>
+</html>
