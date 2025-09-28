@@ -31,25 +31,43 @@ app.get('/browser-extension.js', (req, res) => {
 
 // Real API endpoints for essay writing
 app.post('/api/start-writing', async (req, res) => {
-    console.log('Essay writing started:', req.body);
+    console.log('=== Essay writing API called ===');
+    console.log('Request body:', req.body);
+    console.log('OpenAI API Key present:', !!process.env.OPENAI_API_KEY);
     
     try {
         const { prompt, settings } = req.body;
         
+        if (!prompt) {
+            console.error('No prompt provided');
+            return res.status(400).json({ success: false, error: 'No prompt provided' });
+        }
+        
+        if (!process.env.OPENAI_API_KEY) {
+            console.error('OpenAI API key not found in environment variables');
+            return res.status(500).json({ success: false, error: 'OpenAI API key not configured' });
+        }
+        
+        console.log('Creating EssayBot instance...');
         // Create EssayBot instance
         const essayBot = new EssayBot(settings);
         
+        console.log('Starting writing process...');
         // Start writing process
         const result = await essayBot.startWriting(prompt, (progress) => {
             console.log(`Writing progress: ${progress.progress}% - ${progress.stage}`);
             // In a real implementation, you'd use WebSockets to send progress updates
         });
         
+        console.log('Writing completed successfully');
         res.json({ success: true, result });
         
     } catch (error) {
-        console.error('Error starting writing:', error);
-        res.json({ success: false, error: error.message });
+        console.error('=== Error starting writing ===');
+        console.error('Error type:', error.constructor.name);
+        console.error('Error message:', error.message);
+        console.error('Error stack:', error.stack);
+        res.status(500).json({ success: false, error: error.message });
     }
 });
 
@@ -332,8 +350,56 @@ app.post('/api/analyze-style', async (req, res) => {
     }
 });
 
+// Health check endpoint
+app.get('/api/health', (req, res) => {
+    res.json({ 
+        status: 'healthy', 
+        timestamp: new Date().toISOString(),
+        openaiConfigured: !!process.env.OPENAI_API_KEY
+    });
+});
+
+// Test OpenAI connection endpoint
+app.get('/api/test-openai', async (req, res) => {
+    try {
+        if (!process.env.OPENAI_API_KEY) {
+            return res.status(500).json({ 
+                success: false, 
+                error: 'OpenAI API key not configured' 
+            });
+        }
+        
+        const openai = new OpenAI({
+            apiKey: process.env.OPENAI_API_KEY
+        });
+        
+        const completion = await openai.chat.completions.create({
+            model: "gpt-3.5-turbo",
+            messages: [{ role: "user", content: "Hello, this is a test." }],
+            max_tokens: 10
+        });
+        
+        res.json({ 
+            success: true, 
+            message: 'OpenAI connection successful',
+            response: completion.choices[0].message.content
+        });
+    } catch (error) {
+        console.error('OpenAI test error:', error);
+        res.status(500).json({ 
+            success: false, 
+            error: error.message 
+        });
+    }
+});
+
 app.listen(PORT, () => {
-    console.log(`🌐 Human Essay Bot Web App running at http://localhost:${PORT}`);
-    console.log('📝 Open this URL in your browser to start writing essays!');
-    console.log('🚀 Full functionality available - ready for students to use!');
+    console.log('=== Human Essay Bot Web App Starting ===');
+    console.log(`🌐 Server running at http://localhost:${PORT}`);
+    console.log(`📝 Main interface: http://localhost:${PORT}/electron`);
+    console.log(`🔧 Health check: http://localhost:${PORT}/api/health`);
+    console.log(`🧪 OpenAI test: http://localhost:${PORT}/api/test-openai`);
+    console.log(`🔑 OpenAI API Key configured: ${!!process.env.OPENAI_API_KEY}`);
+    console.log('🚀 Ready for students to use!');
+    console.log('==========================================');
 });

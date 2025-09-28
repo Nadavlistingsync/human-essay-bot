@@ -50,4 +50,4 @@ packages/
 
 # Temporary files
 *.tmp
-*.temp
+*.temp.env

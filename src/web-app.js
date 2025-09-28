@@ -141,6 +141,9 @@ class WebApp {
         this.updateStatus('info', 'Starting essay writing process...');
 
         try {
+            console.log('Making API request to /api/start-writing');
+            console.log('Request payload:', { prompt, settings });
+            
             const response = await fetch('/api/start-writing', {
                 method: 'POST',
                 headers: {
@@ -149,7 +152,15 @@ class WebApp {
                 body: JSON.stringify({ prompt, settings })
             });
 
+            console.log('Response status:', response.status);
+            console.log('Response headers:', response.headers);
+
+            if (!response.ok) {
+                throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+            }
+
             const result = await response.json();
+            console.log('API response:', result);
 
             if (result.success) {
                 this.updateStatus('success', 'Essay writing completed successfully!');
@@ -159,7 +170,21 @@ class WebApp {
             }
         } catch (error) {
             console.error('Start writing error:', error);
-            this.updateStatus('error', `Failed to start writing: ${error.message}`);
+            console.error('Error type:', error.constructor.name);
+            console.error('Error message:', error.message);
+            console.error('Error stack:', error.stack);
+            
+            // More specific error messages
+            let errorMessage = error.message;
+            if (error.message.includes('Failed to fetch')) {
+                errorMessage = 'Cannot connect to server. Make sure the web app is running with "npm start"';
+            } else if (error.message.includes('HTTP 500')) {
+                errorMessage = 'Server error. Check console for details.';
+            } else if (error.message.includes('HTTP 404')) {
+                errorMessage = 'API endpoint not found. Check server configuration.';
+            }
+            
+            this.updateStatus('error', `Failed to start writing: ${errorMessage}`);
         } finally {
             this.isWriting = false;
             this.updateUI(false);
