@@ -12,6 +12,19 @@ class HumanTyping {
     return new Promise(resolve => setTimeout(resolve, delay));
   }
 
+  // Get speed multiplier based on typing speed setting
+  getSpeedMultiplier() {
+    switch (this.settings.typingSpeed) {
+      case 'slow':
+        return 1.5; // Slower typing
+      case 'fast':
+        return 0.7; // Faster typing
+      case 'human-like':
+      default:
+        return 1.0; // Normal human speed
+    }
+  }
+
   // Type text with human-like patterns
   async typeText(page, text) {
     for (let i = 0; i < text.length; i++) {
@@ -31,26 +44,29 @@ class HumanTyping {
   }
 
   async getTypingDelay(char, index, text) {
-    let baseDelay = 100; // Base delay in ms
+    let baseDelay = 120; // Base delay in ms
     
-    // Adjust delay based on character type
+    // Adjust delay based on character type and typing speed setting
+    const speedMultiplier = this.getSpeedMultiplier();
+    
     if (char === ' ') {
-      baseDelay = Random.integer(80, 150)(this.engine);
+      baseDelay = Random.integer(100, 200)(this.engine) * speedMultiplier;
     } else if (char === '.' || char === '!' || char === '?') {
-      baseDelay = Random.integer(200, 500)(this.engine);
+      baseDelay = Random.integer(300, 800)(this.engine) * speedMultiplier;
     } else if (char === ',' || char === ';' || char === ':') {
-      baseDelay = Random.integer(150, 300)(this.engine);
+      baseDelay = Random.integer(200, 400)(this.engine) * speedMultiplier;
     } else if (char.match(/[A-Z]/)) {
-      baseDelay = Random.integer(120, 250)(this.engine);
+      baseDelay = Random.integer(150, 300)(this.engine) * speedMultiplier;
     } else if (char.match(/[0-9]/)) {
-      baseDelay = Random.integer(100, 200)(this.engine);
+      baseDelay = Random.integer(120, 250)(this.engine) * speedMultiplier;
     } else {
-      baseDelay = Random.integer(80, 180)(this.engine);
+      baseDelay = Random.integer(100, 220)(this.engine) * speedMultiplier;
     }
 
-    // Add variation based on typing speed setting
-    const speedMultiplier = this.getSpeedMultiplier();
-    baseDelay *= speedMultiplier;
+    // Add occasional longer pauses (like thinking)
+    if (Random.bool(0.05)(this.engine)) { // 5% chance
+      baseDelay += Random.integer(500, 1500)(this.engine);
+    }
 
     // Occasionally add longer pauses (thinking pauses)
     if (Random.integer(1, 100)(this.engine) <= 3) { // 3% chance

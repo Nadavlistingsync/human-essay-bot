@@ -103,12 +103,13 @@ class EssayBot {
                 this.isWriting = true;
                 console.log(`Attempting to launch browser (attempt ${retryCount + 1}/${maxRetries})...`);
                 
-                // Launch browser with more stable configuration
+                // Launch browser with visible window for real human-like automation
                 this.browser = await puppeteer.launch({
-                    headless: "new", // Use new headless mode for better stability
+                    headless: false, // Show browser window so user can see it working
                     defaultViewport: null,
-                    ignoreDefaultArgs: ['--disable-extensions', '--enable-automation'],
+                    ignoreDefaultArgs: ['--enable-automation'],
                     args: [
+                        '--start-maximized',
                         '--no-sandbox',
                         '--disable-setuid-sandbox',
                         '--disable-dev-shm-usage',
@@ -116,22 +117,20 @@ class EssayBot {
                         '--disable-notifications',
                         '--disable-web-security',
                         '--disable-features=VizDisplayCompositor',
-                        '--disable-background-timer-throttling',
-                        '--disable-backgrounding-occluded-windows',
-                        '--disable-renderer-backgrounding',
-                        '--disable-ipc-flooding-protection',
                         '--no-first-run',
                         '--no-default-browser-check',
                         '--disable-default-apps',
-                        '--disable-extensions',
-                        '--disable-plugins',
+                        '--disable-extensions-except',
+                        '--disable-plugins-discovery',
                         '--disable-gpu',
-                        '--single-process',
-                        '--no-zygote'
+                        '--disable-background-timer-throttling',
+                        '--disable-backgrounding-occluded-windows',
+                        '--disable-renderer-backgrounding',
+                        '--disable-ipc-flooding-protection'
                     ],
-                    timeout: 30000,
-                    protocolTimeout: 30000,
-                    slowMo: 50 // Add small delay between actions
+                    timeout: 60000,
+                    protocolTimeout: 60000,
+                    slowMo: 100 // Slower, more human-like actions
                 });
 
                 console.log('Browser launched successfully, creating new page...');
@@ -192,12 +191,27 @@ class EssayBot {
         }
         
         try {
-            // Hide automation indicators
+            // Hide automation indicators and make it look more human
             await this.page.evaluateOnNewDocument(() => {
                 Object.defineProperty(navigator, 'webdriver', {
                     get: () => undefined,
                 });
+                Object.defineProperty(navigator, 'plugins', {
+                    get: () => [1, 2, 3, 4, 5],
+                });
+                Object.defineProperty(navigator, 'languages', {
+                    get: () => ['en-US', 'en'],
+                });
+                window.chrome = {
+                    runtime: {},
+                };
             });
+
+            // Set realistic user agent
+            await this.page.setUserAgent('Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36');
+            
+            // Set realistic viewport
+            await this.page.setViewport({ width: 1920, height: 1080 });
 
             progressCallback({ stage: 'launching', progress: 10 });
 
@@ -220,6 +234,33 @@ class EssayBot {
             console.error('Error in startWriting:', error);
             console.error('Error details:', error.message);
             console.error('Stack trace:', error.stack);
+            
+            // Check if this is a browser connection error
+            if (error.message.includes('Target closed') || 
+                error.message.includes('Protocol error') || 
+                error.message.includes('socket hang up') ||
+                error.message.includes('ECONNRESET')) {
+                
+                console.log('Browser connection failed, falling back to essay generation only...');
+                
+                if (this.browser) {
+                    try {
+                        await this.browser.close();
+                    } catch (closeError) {
+                        console.error('Error closing browser:', closeError);
+                    }
+                }
+                
+                // Generate essay content without browser automation
+                const essayContent = await this.generateEssay(prompt);
+                return { 
+                    success: true, 
+                    content: essayContent,
+                    mode: 'generation-only',
+                    message: 'Essay generated successfully. Browser automation failed, but you can copy the content below and paste it into your Google Doc manually.'
+                };
+            }
+            
             if (this.browser) {
                 try {
                     await this.browser.close();
@@ -232,18 +273,24 @@ class EssayBot {
     }
 
     async navigateToGoogleDocs() {
-        console.log('Navigating to Google Docs...');
-        // Navigate to Google Docs
+        console.log('🌐 Opening Google Docs...');
+        
+        // Navigate to Google Docs with human-like behavior
         await this.page.goto('https://docs.google.com', { 
             waitUntil: 'networkidle2',
             timeout: 30000 
         });
 
-        console.log('Waiting for user login...');
+        // Add human-like delay
+        await this.page.waitForTimeout(2000);
+
+        console.log('👤 Waiting for you to log in to Google...');
+        console.log('📝 Please log in to your Google account in the browser window');
+        
         // Wait for user to be logged in
         await this.waitForLogin();
         
-        console.log('Navigating to document...');
+        console.log('✅ Login detected! Navigating to document...');
         // Navigate to document
         await this.navigateToDocument();
     }
@@ -329,25 +376,27 @@ ${JSON.stringify(this.settings.writingStyle, null, 2)}`;
     }
 
     async typeEssay(content, progressCallback) {
-        console.log('Starting to type essay...');
-        console.log('Essay content length:', content.length);
+        console.log('✍️ Starting to type essay like a human...');
+        console.log('📊 Essay content length:', content.length);
         
         const sentences = content.split(/[.!?]+/).filter(s => s.trim().length > 0);
         let typedCharacters = 0;
         const totalCharacters = content.length;
 
-        console.log('Number of sentences to type:', sentences.length);
+        console.log('📝 Number of sentences to type:', sentences.length);
 
         for (let i = 0; i < sentences.length && this.isWriting; i++) {
             const sentence = sentences[i].trim() + (i < sentences.length - 1 ? '.' : '');
             
-            console.log(`Typing sentence ${i + 1}/${sentences.length}: "${sentence.substring(0, 50)}..."`);
+            console.log(`⌨️ Typing sentence ${i + 1}/${sentences.length}: "${sentence.substring(0, 50)}..."`);
             
             // Type the sentence with human-like patterns
             await this.humanTyping.typeText(this.page, sentence);
             
-            // Add natural pause after sentence
-            await this.humanTyping.randomDelay(500, 2000);
+            // Add natural pause after sentence (like a human thinking)
+            const pauseTime = Math.random() * 3000 + 1000; // 1-4 seconds
+            console.log(`⏸️ Pausing for ${Math.round(pauseTime/1000)}s (thinking...)`);
+            await this.humanTyping.randomDelay(pauseTime, pauseTime + 500);
             
             typedCharacters += sentence.length;
             const progress = Math.min(75 + (typedCharacters / totalCharacters) * 25, 95);
@@ -359,7 +408,7 @@ ${JSON.stringify(this.settings.writingStyle, null, 2)}`;
             });
         }
         
-        console.log('Finished typing essay!');
+        console.log('🎉 Finished typing essay! It should look like a human wrote it!');
     }
 }
 

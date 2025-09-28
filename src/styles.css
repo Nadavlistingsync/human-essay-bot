@@ -189,6 +189,17 @@ body {
     box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
 }
 
+.btn-secondary {
+    background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+    color: white;
+    margin-left: 10px;
+}
+
+.btn-secondary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 20px rgba(40, 167, 69, 0.3);
+}
+
 .btn-danger {
     background: linear-gradient(135deg, #ff6b6b 0%, #ee5a52 100%);
     color: white;

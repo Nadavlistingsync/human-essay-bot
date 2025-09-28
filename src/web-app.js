@@ -19,6 +19,7 @@ class WebApp {
             stylePreview: document.getElementById('style-preview'),
             styleDetails: document.getElementById('style-details'),
             startBtn: document.getElementById('start-btn'),
+            generateBtn: document.getElementById('generate-btn'),
             stopBtn: document.getElementById('stop-btn'),
             progressSection: document.getElementById('progress-section'),
             progressFill: document.getElementById('progress-fill'),
@@ -30,6 +31,7 @@ class WebApp {
 
     setupEventListeners() {
         this.elements.startBtn.addEventListener('click', () => this.startWriting());
+        this.elements.generateBtn.addEventListener('click', () => this.generateEssayOnly());
         this.elements.stopBtn.addEventListener('click', () => this.stopWriting());
 
         // Auto-save settings to localStorage
@@ -196,6 +198,55 @@ class WebApp {
         }
     }
 
+    async generateEssayOnly() {
+        if (this.isWriting) return;
+
+        const prompt = this.elements.essayPrompt.value.trim();
+
+        if (!prompt) {
+            this.updateStatus('error', 'Please enter an essay prompt.');
+            return;
+        }
+
+        this.isWriting = true;
+        this.updateUI(true);
+        this.updateStatus('info', 'Generating essay content...');
+
+        try {
+            console.log('Making API request to /api/generate-essay-simple');
+            
+            const response = await fetch('/api/generate-essay-simple', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ prompt })
+            });
+
+            console.log('Response status:', response.status);
+
+            if (!response.ok) {
+                throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+            }
+
+            const result = await response.json();
+            console.log('API response:', result);
+
+            if (result.success) {
+                this.updateStatus('success', result.message);
+                this.showGeneratedContent(result.content);
+            } else {
+                this.updateStatus('error', `Error: ${result.error}`);
+            }
+        } catch (error) {
+            console.error('Generate essay error:', error);
+            this.updateStatus('error', `Failed to generate essay: ${error.message}`);
+        } finally {
+            this.isWriting = false;
+            this.updateUI(false);
+        }
+    }
+
     async stopWriting() {
         if (!this.isWriting) return;
 
@@ -251,6 +302,7 @@ class WebApp {
 
     updateUI(isWriting) {
         this.elements.startBtn.style.display = isWriting ? 'none' : 'inline-block';
+        this.elements.generateBtn.style.display = isWriting ? 'none' : 'inline-block';
         this.elements.stopBtn.style.display = isWriting ? 'inline-block' : 'none';
         this.elements.progressSection.style.display = isWriting ? 'block' : 'none';
 
