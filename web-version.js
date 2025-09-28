@@ -107,6 +107,7 @@ class EssayBot {
                 this.browser = await puppeteer.launch({
                     headless: false, // Show browser window so user can see it working
                     defaultViewport: null,
+                    executablePath: '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome',
                     ignoreDefaultArgs: ['--enable-automation'],
                     args: [
                         '--start-maximized',
@@ -158,6 +159,7 @@ class EssayBot {
                         try {
                             this.browser = await puppeteer.launch({
                                 headless: true,
+                                executablePath: '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome',
                                 args: [
                                     '--no-sandbox',
                                     '--disable-setuid-sandbox',
@@ -241,7 +243,7 @@ class EssayBot {
                 error.message.includes('socket hang up') ||
                 error.message.includes('ECONNRESET')) {
                 
-                console.log('Browser connection failed, falling back to essay generation only...');
+                console.log('🔧 Browser connection failed, falling back to essay generation only...');
                 
                 if (this.browser) {
                     try {
@@ -252,12 +254,15 @@ class EssayBot {
                 }
                 
                 // Generate essay content without browser automation
+                console.log('📝 Generating essay content...');
                 const essayContent = await this.generateEssay(prompt);
+                console.log('✅ Essay generated successfully!');
+                
                 return { 
                     success: true, 
                     content: essayContent,
                     mode: 'generation-only',
-                    message: 'Essay generated successfully. Browser automation failed, but you can copy the content below and paste it into your Google Doc manually.'
+                    message: 'Essay generated successfully! Browser automation failed, but you can copy the content below and paste it into your Google Doc manually.'
                 };
             }
             
