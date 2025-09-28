@@ -95,25 +95,90 @@ class EssayBot {
     }
 
     async startWriting(prompt, progressCallback) {
-        try {
-            this.isWriting = true;
-            
-            // Launch browser
-            this.browser = await puppeteer.launch({
-                headless: false, // Show browser so user can log in
-                defaultViewport: null,
-                args: [
-                    '--start-maximized',
-                    '--no-sandbox',
-                    '--disable-setuid-sandbox',
-                    '--disable-dev-shm-usage',
-                    '--disable-blink-features=AutomationControlled',
-                    '--disable-notifications'
-                ]
-            });
+        let retryCount = 0;
+        const maxRetries = 3;
+        
+        while (retryCount < maxRetries) {
+            try {
+                this.isWriting = true;
+                console.log(`Attempting to launch browser (attempt ${retryCount + 1}/${maxRetries})...`);
+                
+                // Launch browser with improved configuration
+                this.browser = await puppeteer.launch({
+                    headless: false, // Show browser so user can log in
+                    defaultViewport: null,
+                    ignoreDefaultArgs: ['--disable-extensions'],
+                    args: [
+                        '--start-maximized',
+                        '--no-sandbox',
+                        '--disable-setuid-sandbox',
+                        '--disable-dev-shm-usage',
+                        '--disable-blink-features=AutomationControlled',
+                        '--disable-notifications',
+                        '--disable-web-security',
+                        '--disable-features=VizDisplayCompositor',
+                        '--disable-background-timer-throttling',
+                        '--disable-backgrounding-occluded-windows',
+                        '--disable-renderer-backgrounding',
+                        '--disable-ipc-flooding-protection',
+                        '--no-first-run',
+                        '--no-default-browser-check',
+                        '--disable-default-apps'
+                    ],
+                    timeout: 60000, // Increase timeout
+                    protocolTimeout: 60000
+                });
 
-            this.page = await this.browser.newPage();
-            
+                console.log('Browser launched successfully, creating new page...');
+                this.page = await this.browser.newPage();
+                console.log('New page created successfully');
+                break; // Success, exit retry loop
+                
+            } catch (error) {
+                retryCount++;
+                console.error(`Browser launch attempt ${retryCount} failed:`, error.message);
+                
+                if (this.browser) {
+                    try {
+                        await this.browser.close();
+                    } catch (closeError) {
+                        console.error('Error closing browser after failed launch:', closeError);
+                    }
+                    this.browser = null;
+                }
+                
+                if (retryCount >= maxRetries) {
+                    // Try one final attempt with headless mode as fallback
+                    if (retryCount === maxRetries) {
+                        console.log('Attempting fallback with headless mode...');
+                        try {
+                            this.browser = await puppeteer.launch({
+                                headless: true,
+                                args: [
+                                    '--no-sandbox',
+                                    '--disable-setuid-sandbox',
+                                    '--disable-dev-shm-usage',
+                                    '--disable-blink-features=AutomationControlled'
+                                ],
+                                timeout: 30000
+                            });
+                            this.page = await this.browser.newPage();
+                            console.log('Headless browser launched successfully as fallback');
+                            break;
+                        } catch (headlessError) {
+                            throw new Error(`Failed to launch browser after ${maxRetries} attempts and headless fallback: ${error.message}`);
+                        }
+                    } else {
+                        throw new Error(`Failed to launch browser after ${maxRetries} attempts: ${error.message}`);
+                    }
+                }
+                
+                console.log(`Retrying in 2 seconds... (${retryCount}/${maxRetries})`);
+                await new Promise(resolve => setTimeout(resolve, 2000));
+            }
+        }
+        
+        try {
             // Hide automation indicators
             await this.page.evaluateOnNewDocument(() => {
                 Object.defineProperty(navigator, 'webdriver', {
