@@ -108,29 +108,41 @@ class EssayBot {
                     headless: false, // Show browser window so user can see it working
                     defaultViewport: null,
                     executablePath: '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome',
-                    ignoreDefaultArgs: ['--enable-automation'],
+                    ignoreDefaultArgs: ['--enable-automation', '--enable-blink-features=IdleDetection'],
                     args: [
-                        '--start-maximized',
                         '--no-sandbox',
                         '--disable-setuid-sandbox',
                         '--disable-dev-shm-usage',
                         '--disable-blink-features=AutomationControlled',
                         '--disable-notifications',
                         '--disable-web-security',
-                        '--disable-features=VizDisplayCompositor',
                         '--no-first-run',
                         '--no-default-browser-check',
                         '--disable-default-apps',
-                        '--disable-extensions-except',
-                        '--disable-plugins-discovery',
-                        '--disable-gpu',
+                        '--disable-extensions',
+                        '--disable-plugins',
                         '--disable-background-timer-throttling',
                         '--disable-backgrounding-occluded-windows',
                         '--disable-renderer-backgrounding',
-                        '--disable-ipc-flooding-protection'
+                        '--disable-features=TranslateUI',
+                        '--disable-ipc-flooding-protection',
+                        '--disable-hang-monitor',
+                        '--disable-prompt-on-repost',
+                        '--disable-sync',
+                        '--disable-domain-reliability',
+                        '--disable-component-extensions-with-background-pages',
+                        '--disable-background-networking',
+                        '--disable-default-apps',
+                        '--disable-extensions',
+                        '--disable-sync',
+                        '--metrics-recording-only',
+                        '--no-report-upload',
+                        '--safebrowsing-disable-auto-update',
+                        '--enable-automation=false',
+                        '--password-store=basic',
+                        '--use-mock-keychain'
                     ],
-                    timeout: 60000,
-                    protocolTimeout: 60000,
+                    timeout: 30000,
                     slowMo: 100 // Slower, more human-like actions
                 });
 
@@ -163,8 +175,7 @@ class EssayBot {
                                 args: [
                                     '--no-sandbox',
                                     '--disable-setuid-sandbox',
-                                    '--disable-dev-shm-usage',
-                                    '--disable-blink-features=AutomationControlled'
+                                    '--disable-dev-shm-usage'
                                 ],
                                 timeout: 30000
                             });
@@ -195,18 +206,37 @@ class EssayBot {
         try {
             // Hide automation indicators and make it look more human
             await this.page.evaluateOnNewDocument(() => {
+                // Remove webdriver property
                 Object.defineProperty(navigator, 'webdriver', {
                     get: () => undefined,
                 });
+                
+                // Add realistic plugins
                 Object.defineProperty(navigator, 'plugins', {
-                    get: () => [1, 2, 3, 4, 5],
+                    get: () => [
+                        { name: 'Chrome PDF Plugin', filename: 'internal-pdf-viewer' },
+                        { name: 'Chrome PDF Viewer', filename: 'mhjfbmdgcfjbbpaeojofohoefgiehjai' },
+                        { name: 'Native Client', filename: 'internal-nacl-plugin' }
+                    ],
                 });
+                
+                // Set realistic languages
                 Object.defineProperty(navigator, 'languages', {
                     get: () => ['en-US', 'en'],
                 });
+                
+                // Add chrome runtime
                 window.chrome = {
-                    runtime: {},
+                    runtime: {
+                        onConnect: undefined,
+                        onMessage: undefined
+                    },
                 };
+                
+                // Remove automation indicators
+                delete window.cdc_adoQpoasnfa76pfcZLmcfl_Array;
+                delete window.cdc_adoQpoasnfa76pfcZLmcfl_Promise;
+                delete window.cdc_adoQpoasnfa76pfcZLmcfl_Symbol;
             });
 
             // Set realistic user agent
@@ -214,6 +244,16 @@ class EssayBot {
             
             // Set realistic viewport
             await this.page.setViewport({ width: 1920, height: 1080 });
+            
+            // Set additional headers to look more legitimate
+            await this.page.setExtraHTTPHeaders({
+                'Accept-Language': 'en-US,en;q=0.9',
+                'Accept-Encoding': 'gzip, deflate, br',
+                'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
+                'Upgrade-Insecure-Requests': '1',
+                'Cache-Control': 'no-cache',
+                'Pragma': 'no-cache'
+            });
 
             progressCallback({ stage: 'launching', progress: 10 });
 
@@ -278,9 +318,20 @@ class EssayBot {
     }
 
     async navigateToGoogleDocs() {
-        console.log('🌐 Opening Google Docs...');
+        console.log('🌐 Opening Google first...');
         
-        // Navigate to Google Docs with human-like behavior
+        // Navigate to Google first (more natural)
+        await this.page.goto('https://www.google.com', { 
+            waitUntil: 'networkidle2',
+            timeout: 30000 
+        });
+
+        // Add human-like delay
+        await this.page.waitForTimeout(3000);
+
+        console.log('🔗 Navigating to Google Docs...');
+        
+        // Navigate to Google Docs
         await this.page.goto('https://docs.google.com', { 
             waitUntil: 'networkidle2',
             timeout: 30000 
@@ -291,6 +342,7 @@ class EssayBot {
 
         console.log('👤 Waiting for you to log in to Google...');
         console.log('📝 Please log in to your Google account in the browser window');
+        console.log('💡 If you see a security warning, try refreshing the page or using a different Google account');
         
         // Wait for user to be logged in
         await this.waitForLogin();
