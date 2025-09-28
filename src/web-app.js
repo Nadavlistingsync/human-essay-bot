@@ -163,8 +163,13 @@ class WebApp {
             console.log('API response:', result);
 
             if (result.success) {
-                this.updateStatus('success', 'Essay writing completed successfully!');
-                this.updateProgress(100, 'Essay completed!', '');
+                if (result.mode === 'generation-only') {
+                    this.updateStatus('success', result.message);
+                    this.showGeneratedContent(result.content);
+                } else {
+                    this.updateStatus('success', 'Essay writing completed successfully!');
+                    this.updateProgress(100, 'Essay completed!', '');
+                }
             } else {
                 this.updateStatus('error', `Error: ${result.error}`);
             }
@@ -280,6 +285,29 @@ class WebApp {
                 this.elements.typingSpeed.value = settings.typingSpeed;
             }
         }
+    }
+
+    showGeneratedContent(content) {
+        // Create a modal or section to display the generated content
+        const contentSection = document.createElement('div');
+        contentSection.className = 'generated-content-section';
+        contentSection.innerHTML = `
+            <div class="content-header">
+                <h3>📝 Generated Essay Content</h3>
+                <button class="copy-btn" onclick="navigator.clipboard.writeText(this.nextElementSibling.textContent)">📋 Copy to Clipboard</button>
+            </div>
+            <div class="content-text">${content}</div>
+            <div class="content-footer">
+                <p><strong>Instructions:</strong> Copy the content above and paste it into your Google Doc manually.</p>
+            </div>
+        `;
+
+        // Insert after the progress section
+        const progressSection = document.getElementById('progress-section');
+        progressSection.parentNode.insertBefore(contentSection, progressSection.nextSibling);
+        
+        // Show the content section
+        contentSection.style.display = 'block';
     }
 }
 

@@ -103,13 +103,12 @@ class EssayBot {
                 this.isWriting = true;
                 console.log(`Attempting to launch browser (attempt ${retryCount + 1}/${maxRetries})...`);
                 
-                // Launch browser with improved configuration
+                // Launch browser with more stable configuration
                 this.browser = await puppeteer.launch({
-                    headless: false, // Show browser so user can log in
+                    headless: "new", // Use new headless mode for better stability
                     defaultViewport: null,
-                    ignoreDefaultArgs: ['--disable-extensions'],
+                    ignoreDefaultArgs: ['--disable-extensions', '--enable-automation'],
                     args: [
-                        '--start-maximized',
                         '--no-sandbox',
                         '--disable-setuid-sandbox',
                         '--disable-dev-shm-usage',
@@ -123,10 +122,16 @@ class EssayBot {
                         '--disable-ipc-flooding-protection',
                         '--no-first-run',
                         '--no-default-browser-check',
-                        '--disable-default-apps'
+                        '--disable-default-apps',
+                        '--disable-extensions',
+                        '--disable-plugins',
+                        '--disable-gpu',
+                        '--single-process',
+                        '--no-zygote'
                     ],
-                    timeout: 60000, // Increase timeout
-                    protocolTimeout: 60000
+                    timeout: 30000,
+                    protocolTimeout: 30000,
+                    slowMo: 50 // Add small delay between actions
                 });
 
                 console.log('Browser launched successfully, creating new page...');
@@ -166,7 +171,15 @@ class EssayBot {
                             console.log('Headless browser launched successfully as fallback');
                             break;
                         } catch (headlessError) {
-                            throw new Error(`Failed to launch browser after ${maxRetries} attempts and headless fallback: ${error.message}`);
+                            console.log('Headless mode also failed, falling back to essay generation only...');
+                            // Fallback: just generate the essay content without browser automation
+                            const essayContent = await this.generateEssay(prompt);
+                            return { 
+                                success: true, 
+                                content: essayContent,
+                                mode: 'generation-only',
+                                message: 'Essay generated successfully. Browser automation failed, but you can copy the content below and paste it into your Google Doc manually.'
+                            };
                         }
                     } else {
                         throw new Error(`Failed to launch browser after ${maxRetries} attempts: ${error.message}`);
@@ -349,6 +362,57 @@ ${JSON.stringify(this.settings.writingStyle, null, 2)}`;
         console.log('Finished typing essay!');
     }
 }
+
+// Simple essay generation endpoint (no browser automation)
+app.post('/api/generate-essay-simple', async (req, res) => {
+    console.log('Simple essay generation requested:', req.body);
+    
+    try {
+        const { prompt, settings } = req.body;
+        
+        if (!prompt) {
+            return res.json({ success: false, error: 'No prompt provided' });
+        }
+
+        if (!process.env.OPENAI_API_KEY) {
+            return res.json({ success: false, error: 'OpenAI API key not configured' });
+        }
+
+        const openai = new OpenAI({
+            apiKey: process.env.OPENAI_API_KEY
+        });
+
+        const systemPrompt = `You are a helpful assistant that writes academic essays. Write in a natural, human-like style with the following characteristics:
+- Use varied sentence lengths and structures
+- Include natural transitions between ideas
+- Write in a conversational yet academic tone
+- Use appropriate vocabulary for the topic
+- Include some personal insights or examples where relevant
+- Write in a way that sounds like a real student wrote it`;
+
+        const completion = await openai.chat.completions.create({
+            model: "gpt-4",
+            messages: [
+                { role: "system", content: systemPrompt },
+                { role: "user", content: prompt }
+            ],
+            max_tokens: 2000,
+            temperature: 0.7
+        });
+
+        const content = completion.choices[0].message.content;
+        res.json({ 
+            success: true, 
+            content,
+            mode: 'generation-only',
+            message: 'Essay generated successfully! Copy the content below and paste it into your Google Doc.'
+        });
+        
+    } catch (error) {
+        console.error('Error generating essay:', error);
+        res.json({ success: false, error: error.message });
+    }
+});
 
 // Essay generation endpoint for browser extension
 app.post('/api/generate-essay', async (req, res) => {
