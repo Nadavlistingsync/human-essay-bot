@@ -587,46 +587,6 @@ body {
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 
-/* Templates */
-.templates-section {
-    background: white;
-    border-radius: 12px;
-    padding: 2rem;
-    margin-bottom: 2rem;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-}
-
-.template-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 1rem;
-}
-
-.template-card {
-    background: #f9fafb;
-    border: 1px solid #e5e7eb;
-    border-radius: 8px;
-    padding: 1.5rem;
-    text-align: center;
-    cursor: pointer;
-    transition: all 0.2s;
-}
-
-.template-card:hover {
-    border-color: #3b82f6;
-    background: #eff6ff;
-}
-
-.template-card h4 {
-    color: #1f2937;
-    font-weight: 600;
-    margin-bottom: 0.5rem;
-}
-
-.template-card p {
-    color: #6b7280;
-    font-size: 0.9rem;
-}
 
 /* Action Buttons */
 .action-buttons {

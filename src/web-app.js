@@ -29,12 +29,10 @@ class WebApp {
             // New Composite-like elements
             newProjectBtn: document.getElementById('new-project-btn'),
             projectGrid: document.getElementById('project-grid'),
-            templatesSection: document.getElementById('templates-section'),
             saveDraftBtn: document.getElementById('save-draft-btn'),
             exportBtn: document.getElementById('export-btn'),
             shareBtn: document.getElementById('share-btn'),
-            modeBtns: document.querySelectorAll('.mode-btn'),
-            templateCards: document.querySelectorAll('.template-card')
+            modeBtns: document.querySelectorAll('.mode-btn')
         };
     }
 
@@ -63,11 +61,6 @@ class WebApp {
         // Mode buttons
         this.elements.modeBtns.forEach(btn => {
             btn.addEventListener('click', (e) => this.switchMode(e.target.dataset.mode));
-        });
-        
-        // Template cards
-        this.elements.templateCards.forEach(card => {
-            card.addEventListener('click', (e) => this.selectTemplate(e.currentTarget.dataset.template));
         });
 
         // Auto-save settings to localStorage
@@ -433,32 +426,7 @@ class WebApp {
             }
         });
 
-        // Show/hide relevant sections
-        if (mode === 'template') {
-            if (this.elements.templatesSection) {
-                this.elements.templatesSection.style.display = 'block';
-            }
-        } else {
-            if (this.elements.templatesSection) {
-                this.elements.templatesSection.style.display = 'none';
-            }
-        }
-
         console.log(`Switched to ${mode} mode`);
-    }
-
-    selectTemplate(templateType) {
-        const templates = {
-            argumentative: "Write an argumentative essay about [topic]. Present a clear thesis statement, provide evidence to support your position, address counterarguments, and conclude with a strong restatement of your position.",
-            persuasive: "Write a persuasive essay about [topic]. Use emotional appeals, logical reasoning, and credible evidence to convince your audience to adopt your viewpoint or take action.",
-            expository: "Write an expository essay about [topic]. Explain the topic clearly, provide detailed information, use examples and evidence, and present the information in a logical, organized manner.",
-            narrative: "Write a narrative essay about [topic]. Tell a story or describe a personal experience, use descriptive language, include dialogue if appropriate, and reflect on the significance of the experience."
-        };
-
-        if (templates[templateType]) {
-            this.elements.essayPrompt.value = templates[templateType];
-            this.updateStatus('info', `Selected ${templateType} template. Customize the prompt as needed.`);
-        }
     }
 
     saveDraft() {
