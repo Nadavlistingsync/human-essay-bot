@@ -1,0 +1,47 @@
+{
+  "manifest_version": 3,
+  "name": "EssayForge - AI Essay Writer",
+  "version": "1.0.0",
+  "description": "AI-powered essay writing that works directly in Google Docs",
+  "permissions": [
+    "activeTab",
+    "storage",
+    "scripting"
+  ],
+  "host_permissions": [
+    "https://docs.google.com/*",
+    "https://api.openai.com/*"
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "content_scripts": [
+    {
+      "matches": ["https://docs.google.com/document/*"],
+      "js": ["content.js"],
+      "css": ["content.css"]
+    }
+  ],
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "EssayForge - AI Essay Writer",
+    "default_icon": {
+      "16": "icons/icon16.png",
+      "32": "icons/icon32.png",
+      "48": "icons/icon48.png",
+      "128": "icons/icon128.png"
+    }
+  },
+  "icons": {
+    "16": "icons/icon16.png",
+    "32": "icons/icon32.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  },
+  "web_accessible_resources": [
+    {
+      "resources": ["content.css"],
+      "matches": ["https://docs.google.com/*"]
+    }
+  ]
+}

@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EssayForge</title>
+    <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <div class="logo">
+                <h1>📝 EssayForge</h1>
+                <p>AI Essay Writer</p>
+            </div>
+        </header>
+
+        <main class="main-content">
+            <div class="status-section" id="status-section">
+                <div class="status-indicator" id="status-indicator">
+                    <span class="status-dot"></span>
+                    <span class="status-text">Ready</span>
+                </div>
+            </div>
+
+            <div class="input-section">
+                <div class="form-group">
+                    <label for="essay-prompt">📝 Essay Prompt:</label>
+                    <textarea 
+                        id="essay-prompt" 
+                        placeholder="Write an essay about artificial intelligence and its impact on education..."
+                        rows="4"
+                    ></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="typing-speed">⚡ Typing Speed:</label>
+                    <select id="typing-speed">
+                        <option value="slow">🐌 Slow (Human-like)</option>
+                        <option value="medium" selected>🚀 Medium</option>
+                        <option value="fast">⚡ Fast</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="essay-length">📏 Essay Length:</label>
+                    <select id="essay-length">
+                        <option value="short">📄 Short (300-500 words)</option>
+                        <option value="medium" selected>📝 Medium (500-800 words)</option>
+                        <option value="long">📚 Long (800-1200 words)</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="action-section">
+                <button id="start-btn" class="btn btn-primary">
+                    🚀 Start Writing Essay
+                </button>
+                <button id="stop-btn" class="btn btn-danger" style="display: none;">
+                    ⏹️ Stop Writing
+                </button>
+            </div>
+
+            <div class="progress-section" id="progress-section" style="display: none;">
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progress-fill"></div>
+                </div>
+                <div class="progress-text" id="progress-text">Starting...</div>
+            </div>
+
+            <div class="settings-section">
+                <h3>⚙️ Settings</h3>
+                <div class="form-group">
+                    <label for="api-key">🔑 OpenAI API Key:</label>
+                    <input type="password" id="api-key" placeholder="Enter your OpenAI API key">
+                    <button id="save-key-btn" class="btn btn-outline">Save</button>
+                </div>
+            </div>
+
+            <div class="help-section">
+                <h3>❓ How to Use</h3>
+                <ol>
+                    <li>Open a Google Doc</li>
+                    <li>Enter your essay prompt above</li>
+                    <li>Click "Start Writing Essay"</li>
+                    <li>Watch the AI write your essay!</li>
+                </ol>
+            </div>
+        </main>
+    </div>
+
+    <script src="popup.js"></script>
+</body>
+</html>
