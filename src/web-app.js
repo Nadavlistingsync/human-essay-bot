@@ -25,7 +25,16 @@ class WebApp {
             progressFill: document.getElementById('progress-fill'),
             progressText: document.getElementById('progress-text'),
             currentSentence: document.getElementById('current-sentence'),
-            statusCard: document.getElementById('status-card')
+            statusCard: document.getElementById('status-card'),
+            // New Composite-like elements
+            newProjectBtn: document.getElementById('new-project-btn'),
+            projectGrid: document.getElementById('project-grid'),
+            templatesSection: document.getElementById('templates-section'),
+            saveDraftBtn: document.getElementById('save-draft-btn'),
+            exportBtn: document.getElementById('export-btn'),
+            shareBtn: document.getElementById('share-btn'),
+            modeBtns: document.querySelectorAll('.mode-btn'),
+            templateCards: document.querySelectorAll('.template-card')
         };
     }
 
@@ -33,6 +42,33 @@ class WebApp {
         this.elements.startBtn.addEventListener('click', () => this.startWriting());
         this.elements.generateBtn.addEventListener('click', () => this.generateEssayOnly());
         this.elements.stopBtn.addEventListener('click', () => this.stopWriting());
+        
+        // New Composite-like event listeners
+        if (this.elements.newProjectBtn) {
+            this.elements.newProjectBtn.addEventListener('click', () => this.createNewProject());
+        }
+        
+        if (this.elements.saveDraftBtn) {
+            this.elements.saveDraftBtn.addEventListener('click', () => this.saveDraft());
+        }
+        
+        if (this.elements.exportBtn) {
+            this.elements.exportBtn.addEventListener('click', () => this.exportEssay());
+        }
+        
+        if (this.elements.shareBtn) {
+            this.elements.shareBtn.addEventListener('click', () => this.shareEssay());
+        }
+        
+        // Mode buttons
+        this.elements.modeBtns.forEach(btn => {
+            btn.addEventListener('click', (e) => this.switchMode(e.target.dataset.mode));
+        });
+        
+        // Template cards
+        this.elements.templateCards.forEach(card => {
+            card.addEventListener('click', (e) => this.selectTemplate(e.currentTarget.dataset.template));
+        });
 
         // Auto-save settings to localStorage
         this.elements.documentUrl.addEventListener('input', (e) => {
@@ -360,6 +396,115 @@ class WebApp {
         
         // Show the content section
         contentSection.style.display = 'block';
+    }
+
+    // Composite-like functionality methods
+    createNewProject() {
+        const projectName = prompt('Enter project name:');
+        if (projectName) {
+            this.addProjectToGrid(projectName, 'New essay project', 'draft');
+        }
+    }
+
+    addProjectToGrid(name, description, status) {
+        const projectCard = document.createElement('div');
+        projectCard.className = 'project-card';
+        projectCard.innerHTML = `
+            <div class="project-icon">📝</div>
+            <h3>${name}</h3>
+            <p>${description}</p>
+            <div class="project-meta">
+                <span class="status ${status}">${status.charAt(0).toUpperCase() + status.slice(1)}</span>
+                <span class="date">Just now</span>
+            </div>
+        `;
+        
+        if (this.elements.projectGrid) {
+            this.elements.projectGrid.insertBefore(projectCard, this.elements.projectGrid.firstChild);
+        }
+    }
+
+    switchMode(mode) {
+        // Update active mode button
+        this.elements.modeBtns.forEach(btn => {
+            btn.classList.remove('active');
+            if (btn.dataset.mode === mode) {
+                btn.classList.add('active');
+            }
+        });
+
+        // Show/hide relevant sections
+        if (mode === 'template') {
+            if (this.elements.templatesSection) {
+                this.elements.templatesSection.style.display = 'block';
+            }
+        } else {
+            if (this.elements.templatesSection) {
+                this.elements.templatesSection.style.display = 'none';
+            }
+        }
+
+        console.log(`Switched to ${mode} mode`);
+    }
+
+    selectTemplate(templateType) {
+        const templates = {
+            argumentative: "Write an argumentative essay about [topic]. Present a clear thesis statement, provide evidence to support your position, address counterarguments, and conclude with a strong restatement of your position.",
+            persuasive: "Write a persuasive essay about [topic]. Use emotional appeals, logical reasoning, and credible evidence to convince your audience to adopt your viewpoint or take action.",
+            expository: "Write an expository essay about [topic]. Explain the topic clearly, provide detailed information, use examples and evidence, and present the information in a logical, organized manner.",
+            narrative: "Write a narrative essay about [topic]. Tell a story or describe a personal experience, use descriptive language, include dialogue if appropriate, and reflect on the significance of the experience."
+        };
+
+        if (templates[templateType]) {
+            this.elements.essayPrompt.value = templates[templateType];
+            this.updateStatus('info', `Selected ${templateType} template. Customize the prompt as needed.`);
+        }
+    }
+
+    saveDraft() {
+        const prompt = this.elements.essayPrompt.value;
+        if (prompt.trim()) {
+            localStorage.setItem('essayDraft', prompt);
+            this.updateStatus('success', 'Draft saved successfully!');
+        } else {
+            this.updateStatus('error', 'No content to save as draft.');
+        }
+    }
+
+    exportEssay() {
+        const content = document.querySelector('.content-text');
+        if (content) {
+            const text = content.textContent;
+            const blob = new Blob([text], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'essay.txt';
+            a.click();
+            URL.revokeObjectURL(url);
+            this.updateStatus('success', 'Essay exported successfully!');
+        } else {
+            this.updateStatus('error', 'No essay content to export.');
+        }
+    }
+
+    shareEssay() {
+        const content = document.querySelector('.content-text');
+        if (content) {
+            const text = content.textContent;
+            if (navigator.share) {
+                navigator.share({
+                    title: 'My Essay',
+                    text: text
+                });
+            } else {
+                navigator.clipboard.writeText(text).then(() => {
+                    this.updateStatus('success', 'Essay copied to clipboard for sharing!');
+                });
+            }
+        } else {
+            this.updateStatus('error', 'No essay content to share.');
+        }
     }
 }
 

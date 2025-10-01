@@ -3,20 +3,65 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Human Essay Bot</title>
+    <title>EssayForge - AI Essay Platform</title>
     <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
     <div class="container">
         <header class="header">
             <div class="logo">
-                <h1>🤖 Human Essay Bot</h1>
-                <p>AI-powered essay writing that types like a human</p>
+                <h1>📝 EssayForge</h1>
+                <p>AI-powered essay creation platform - like Composite, but for essays</p>
             </div>
+            <nav class="nav">
+                <a href="#" class="nav-link active">Create</a>
+                <a href="#" class="nav-link">Projects</a>
+                <a href="#" class="nav-link">Templates</a>
+                <a href="#" class="nav-link">Settings</a>
+            </nav>
         </header>
 
         <main class="main-content">
+            <!-- Project Management Section -->
+            <div class="project-section">
+                <div class="project-header">
+                    <h2>📚 My Essay Projects</h2>
+                    <button class="btn btn-outline" id="new-project-btn">+ New Project</button>
+                </div>
+                <div class="project-grid" id="project-grid">
+                    <div class="project-card">
+                        <div class="project-icon">📖</div>
+                        <h3>AI in Education</h3>
+                        <p>Research essay on artificial intelligence impact</p>
+                        <div class="project-meta">
+                            <span class="status completed">Completed</span>
+                            <span class="date">2 days ago</span>
+                        </div>
+                    </div>
+                    <div class="project-card">
+                        <div class="project-icon">🌍</div>
+                        <h3>Climate Change</h3>
+                        <p>Environmental science essay</p>
+                        <div class="project-meta">
+                            <span class="status in-progress">In Progress</span>
+                            <span class="date">1 week ago</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Essay Creation Section -->
             <div class="input-section">
+                <div class="section-header">
+                    <h2>🚀 Create New Essay</h2>
+                    <div class="creation-modes">
+                        <button class="mode-btn active" data-mode="automated">🤖 Automated</button>
+                        <button class="mode-btn" data-mode="assisted">✍️ Assisted</button>
+                        <button class="mode-btn" data-mode="template">📋 Template</button>
+                    </div>
+                </div>
+                
                 <div class="form-group">
                     <label for="essay-prompt">📝 Essay Prompt:</label>
                     <textarea 
@@ -68,16 +113,46 @@
                     </div>
                 </div>
 
+                <!-- Essay Templates Section -->
+                <div class="templates-section" id="templates-section" style="display: none;">
+                    <h3>📋 Choose a Template</h3>
+                    <div class="template-grid">
+                        <div class="template-card" data-template="argumentative">
+                            <h4>🎯 Argumentative</h4>
+                            <p>Present and defend a position</p>
+                        </div>
+                        <div class="template-card" data-template="persuasive">
+                            <h4>💬 Persuasive</h4>
+                            <p>Convince readers of your viewpoint</p>
+                        </div>
+                        <div class="template-card" data-template="expository">
+                            <h4>📊 Expository</h4>
+                            <p>Explain and analyze a topic</p>
+                        </div>
+                        <div class="template-card" data-template="narrative">
+                            <h4>📖 Narrative</h4>
+                            <p>Tell a story or personal experience</p>
+                        </div>
+                    </div>
+                </div>
+
                 <div class="action-section">
-                    <button id="start-btn" class="btn btn-primary">
-                        🚀 Start Writing Essay
-                    </button>
-                    <button id="generate-btn" class="btn btn-secondary">
-                        📝 Generate Essay Only
-                    </button>
-                    <button id="stop-btn" class="btn btn-danger" style="display: none;">
-                        ⏹️ Stop Writing
-                    </button>
+                    <div class="action-buttons">
+                        <button id="start-btn" class="btn btn-primary">
+                            🚀 Start Writing Essay
+                        </button>
+                        <button id="generate-btn" class="btn btn-secondary">
+                            📝 Generate Essay Only
+                        </button>
+                        <button id="stop-btn" class="btn btn-danger" style="display: none;">
+                            ⏹️ Stop Writing
+                        </button>
+                    </div>
+                    <div class="quick-actions">
+                        <button class="btn btn-outline" id="save-draft-btn">💾 Save Draft</button>
+                        <button class="btn btn-outline" id="export-btn">📤 Export</button>
+                        <button class="btn btn-outline" id="share-btn">🔗 Share</button>
+                    </div>
                 </div>
             </div>
 
