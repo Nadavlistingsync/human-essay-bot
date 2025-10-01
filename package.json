@@ -11,6 +11,7 @@
     "build": "electron-builder",
     "build-win": "electron-builder --win",
     "build-mac": "electron-builder --mac",
+    "update-extension": "node update-extension-key.js",
     "build-linux": "electron-builder --linux",
     "dist": "npm run build && electron-builder --publish=never"
   },
