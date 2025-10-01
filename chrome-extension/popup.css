@@ -254,11 +254,14 @@ body {
     margin-bottom: 0.5rem;
 }
 
-/* API Key section */
-.form-group input[type="password"] {
-    margin-bottom: 0.5rem;
-}
-
-.form-group .btn-outline {
-    width: 100%;
+/* Settings info */
+.settings-info {
+    color: #10b981;
+    font-weight: 500;
+    font-size: 0.9rem;
+    text-align: center;
+    padding: 0.5rem;
+    background: #f0fdf4;
+    border-radius: 6px;
+    border: 1px solid #bbf7d0;
 }

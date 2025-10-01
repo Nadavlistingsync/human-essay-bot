@@ -27,15 +27,7 @@ A Chrome extension that automatically writes essays in Google Docs using AI.
 
 ## Setup
 
-1. **Get an OpenAI API Key**:
-   - Go to [OpenAI API](https://platform.openai.com/api-keys)
-   - Create a new API key
-   - Copy the key
-
-2. **Configure the Extension**:
-   - Click the EssayForge icon in your Chrome toolbar
-   - Paste your API key in the settings section
-   - Click "Save"
+**No setup required!** The extension comes pre-configured with an API key and is ready to use immediately.
 
 ## How to Use
 
@@ -46,6 +38,8 @@ A Chrome extension that automatically writes essays in Google Docs using AI.
 5. **Choose your settings** (typing speed, essay length)
 6. **Click "Start Writing Essay"**
 7. **Watch the AI write your essay** in real-time!
+
+**That's it!** No API key setup needed - just install and start writing!
 
 ## Settings
 
@@ -61,7 +55,7 @@ A Chrome extension that automatically writes essays in Google Docs using AI.
 
 ## Privacy & Security
 
-- **Local Storage**: Your API key is stored locally in your browser
+- **Pre-configured**: API key is embedded for seamless user experience
 - **No Data Collection**: We don't collect or store your essay content
 - **Direct API Calls**: All AI requests go directly to OpenAI
 - **Secure**: Uses HTTPS for all API communications
@@ -74,10 +68,10 @@ A Chrome extension that automatically writes essays in Google Docs using AI.
 - Try refreshing the Google Docs page
 - Ensure you have an active internet connection
 
-### API Key Issues?
-- Verify your OpenAI API key is valid
-- Check that you have sufficient API credits
-- Make sure the key has the correct permissions
+### API Issues?
+- The extension uses a pre-configured API key
+- If you encounter API errors, the key may need to be updated
+- Contact support if you experience persistent issues
 
 ### Typing Not Working?
 - Ensure the Google Docs editor is focused

@@ -20,16 +20,13 @@ class PopupApp {
             progressText: document.getElementById('progress-text'),
             statusIndicator: document.getElementById('status-indicator'),
             statusText: document.querySelector('.status-text'),
-            statusDot: document.querySelector('.status-dot'),
-            apiKey: document.getElementById('api-key'),
-            saveKeyBtn: document.getElementById('save-key-btn')
+            statusDot: document.querySelector('.status-dot')
         };
     }
 
     setupEventListeners() {
         this.elements.startBtn.addEventListener('click', () => this.startWriting());
         this.elements.stopBtn.addEventListener('click', () => this.stopWriting());
-        this.elements.saveKeyBtn.addEventListener('click', () => this.saveApiKey());
     }
 
     async checkCurrentTab() {
@@ -51,11 +48,7 @@ class PopupApp {
 
     async loadSettings() {
         try {
-            const result = await chrome.storage.sync.get(['apiKey', 'typingSpeed', 'essayLength']);
-            
-            if (result.apiKey) {
-                this.elements.apiKey.value = result.apiKey;
-            }
+            const result = await chrome.storage.sync.get(['typingSpeed', 'essayLength']);
             
             if (result.typingSpeed) {
                 this.elements.typingSpeed.value = result.typingSpeed;
@@ -69,22 +62,6 @@ class PopupApp {
         }
     }
 
-    async saveApiKey() {
-        const apiKey = this.elements.apiKey.value.trim();
-        
-        if (!apiKey) {
-            this.updateStatus('error', 'Please enter an API key');
-            return;
-        }
-
-        try {
-            await chrome.storage.sync.set({ apiKey });
-            this.updateStatus('success', 'API key saved successfully!');
-        } catch (error) {
-            console.error('Error saving API key:', error);
-            this.updateStatus('error', 'Failed to save API key');
-        }
-    }
 
     async startWriting() {
         if (this.isWriting) return;
@@ -96,12 +73,7 @@ class PopupApp {
             return;
         }
 
-        // Check if API key is set
-        const result = await chrome.storage.sync.get(['apiKey']);
-        if (!result.apiKey) {
-            this.updateStatus('error', 'Please set your OpenAI API key first');
-            return;
-        }
+        // API key is embedded, no need to check
 
         this.isWriting = true;
         this.updateUI(true);
@@ -118,8 +90,7 @@ class PopupApp {
                     prompt: prompt,
                     settings: {
                         typingSpeed: this.elements.typingSpeed.value,
-                        essayLength: this.elements.essayLength.value,
-                        apiKey: result.apiKey
+                        essayLength: this.elements.essayLength.value
                     }
                 }
             });

@@ -74,12 +74,15 @@ class GoogleDocsEssayWriter {
 
 Write the essay content only, without any meta-commentary or instructions.`;
 
+        // Use the embedded API key
+        const apiKey = 'sk-proj-your-api-key-here'; // Replace with your actual API key
+
         try {
             const response = await fetch('https://api.openai.com/v1/chat/completions', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${this.apiKey}`
+                    'Authorization': `Bearer ${apiKey}`
                 },
                 body: JSON.stringify({
                     model: 'gpt-3.5-turbo',
