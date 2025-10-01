@@ -193,17 +193,20 @@ class WebApp {
             const result = await response.json();
             console.log('API response:', result);
 
-            if (result.success) {
-                if (result.mode === 'generation-only') {
-                    this.updateStatus('success', result.message);
-                    this.showGeneratedContent(result.content);
-                } else {
-                    this.updateStatus('success', 'Essay writing completed successfully!');
-                    this.updateProgress(100, 'Essay completed!', '');
-                }
+        if (result.success) {
+            if (result.mode === 'generation-only') {
+                this.updateStatus('success', result.message);
+                this.showGeneratedContent(result.content);
+            } else if (result.mode === 'browser-integration') {
+                this.updateStatus('info', result.message);
+                this.showBrowserIntegrationInstructions(result.instructions, result.googleDocsUrl);
             } else {
-                this.updateStatus('error', `Error: ${result.error}`);
+                this.updateStatus('success', 'Essay writing completed successfully!');
+                this.updateProgress(100, 'Essay completed!', '');
             }
+        } else {
+            this.updateStatus('error', `Error: ${result.error}`);
+        }
         } catch (error) {
             console.error('Start writing error:', error);
             console.error('Error type:', error.constructor.name);
@@ -389,6 +392,55 @@ class WebApp {
         
         // Show the content section
         contentSection.style.display = 'block';
+    }
+
+    showBrowserIntegrationInstructions(instructions, googleDocsUrl) {
+        // Create instructions section
+        const instructionsSection = document.createElement('div');
+        instructionsSection.className = 'browser-integration-section';
+        instructionsSection.innerHTML = `
+            <div class="instructions-header">
+                <h3>🌐 Browser Integration Instructions</h3>
+                <p>Follow these steps to use your current browser instead of opening a new one:</p>
+            </div>
+            <div class="instructions-steps">
+                <div class="step">
+                    <span class="step-number">1</span>
+                    <span class="step-text">${instructions.step1}</span>
+                </div>
+                <div class="step">
+                    <span class="step-number">2</span>
+                    <span class="step-text">${instructions.step2}</span>
+                    <a href="${googleDocsUrl}" target="_blank" class="btn btn-outline">Open Google Docs</a>
+                </div>
+                <div class="step">
+                    <span class="step-number">3</span>
+                    <span class="step-text">${instructions.step3}</span>
+                </div>
+                <div class="step">
+                    <span class="step-number">4</span>
+                    <span class="step-text">${instructions.step4}</span>
+                </div>
+                <div class="step">
+                    <span class="step-number">5</span>
+                    <span class="step-text">${instructions.step5}</span>
+                </div>
+                <div class="step">
+                    <span class="step-number">6</span>
+                    <span class="step-text">${instructions.step6}</span>
+                </div>
+            </div>
+            <div class="instructions-footer">
+                <p><strong>Note:</strong> This approach uses your current browser instead of opening a new Chrome window.</p>
+            </div>
+        `;
+
+        // Insert after the progress section
+        const progressSection = document.getElementById('progress-section');
+        progressSection.parentNode.insertBefore(instructionsSection, progressSection.nextSibling);
+        
+        // Show the instructions section
+        instructionsSection.style.display = 'block';
     }
 
     // Composite-like functionality methods

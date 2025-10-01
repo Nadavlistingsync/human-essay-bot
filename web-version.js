@@ -104,47 +104,33 @@ class EssayBot {
                 console.log(`Attempting to launch browser (attempt ${retryCount + 1}/${maxRetries})...`);
                 
                 // Launch browser with visible window for real human-like automation
-                this.browser = await puppeteer.launch({
-                    headless: false, // Show browser window so user can see it working
-                    defaultViewport: null,
-                    executablePath: '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome',
-                    ignoreDefaultArgs: ['--enable-automation', '--enable-blink-features=IdleDetection'],
-                    args: [
-                        '--no-sandbox',
-                        '--disable-setuid-sandbox',
-                        '--disable-dev-shm-usage',
-                        '--disable-blink-features=AutomationControlled',
-                        '--disable-notifications',
-                        '--disable-web-security',
-                        '--no-first-run',
-                        '--no-default-browser-check',
-                        '--disable-default-apps',
-                        '--disable-extensions',
-                        '--disable-plugins',
-                        '--disable-background-timer-throttling',
-                        '--disable-backgrounding-occluded-windows',
-                        '--disable-renderer-backgrounding',
-                        '--disable-features=TranslateUI',
-                        '--disable-ipc-flooding-protection',
-                        '--disable-hang-monitor',
-                        '--disable-prompt-on-repost',
-                        '--disable-sync',
-                        '--disable-domain-reliability',
-                        '--disable-component-extensions-with-background-pages',
-                        '--disable-background-networking',
-                        '--disable-default-apps',
-                        '--disable-extensions',
-                        '--disable-sync',
-                        '--metrics-recording-only',
-                        '--no-report-upload',
-                        '--safebrowsing-disable-auto-update',
-                        '--enable-automation=false',
-                        '--password-store=basic',
-                        '--use-mock-keychain'
-                    ],
-                    timeout: 30000,
-                    slowMo: 100 // Slower, more human-like actions
-                });
+        // Create a browser extension approach that works in current browser
+        console.log('🌐 Setting up browser integration...');
+        
+        // Generate a unique session ID for this writing session
+        const sessionId = Math.random().toString(36).substring(7);
+        
+        // Create instructions for user to open Google Docs in current browser
+        const instructions = {
+            step1: 'Open a new tab in your current browser',
+            step2: 'Go to https://docs.google.com/document/create',
+            step3: 'Create a new document',
+            step4: 'Copy the document URL from the address bar',
+            step5: 'Return to this tab and paste the URL below',
+            step6: 'Click "Start Writing Essay" again'
+        };
+        
+        // Store session info for later use
+        this.sessionId = sessionId;
+        
+        return {
+            success: true,
+            mode: 'browser-integration',
+            message: 'Please open Google Docs in a new tab and create a document',
+            instructions: instructions,
+            sessionId: sessionId,
+            googleDocsUrl: 'https://docs.google.com/document/create'
+        };
 
                 console.log('Browser launched successfully, creating new page...');
                 this.page = await this.browser.newPage();
