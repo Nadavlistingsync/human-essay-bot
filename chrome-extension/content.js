@@ -74,8 +74,12 @@ class GoogleDocsEssayWriter {
 
 Write the essay content only, without any meta-commentary or instructions.`;
 
-        // Use the embedded API key
-        const apiKey = 'sk-proj-your-api-key-here'; // Replace with your actual API key
+        // Get API key from storage
+        const { apiKey } = await chrome.storage.sync.get('apiKey');
+        
+        if (!apiKey) {
+            throw new Error('API key not configured. Please set your OpenAI API key in the extension popup.');
+        }
 
         try {
             const response = await fetch('https://api.openai.com/v1/chat/completions', {
@@ -186,42 +190,66 @@ Write the essay content only, without any meta-commentary or instructions.`;
     }
 
     simulateTyping(element, char) {
-        // Create a keyboard event
-        const keydownEvent = new KeyboardEvent('keydown', {
-            key: char,
-            code: this.getKeyCode(char),
-            keyCode: char.charCodeAt(0),
-            which: char.charCodeAt(0),
-            bubbles: true,
-            cancelable: true
-        });
+        // Focus the element first
+        element.focus();
+        
+        // Try to insert text using execCommand (works better with Google Docs)
+        try {
+            document.execCommand('insertText', false, char);
+        } catch (e) {
+            // Fallback: dispatch keyboard events
+            const keydownEvent = new KeyboardEvent('keydown', {
+                key: char,
+                code: this.getKeyCode(char),
+                keyCode: char.charCodeAt(0),
+                which: char.charCodeAt(0),
+                bubbles: true,
+                cancelable: true,
+                composed: true
+            });
 
-        const keyupEvent = new KeyboardEvent('keyup', {
-            key: char,
-            code: this.getKeyCode(char),
-            keyCode: char.charCodeAt(0),
-            which: char.charCodeAt(0),
-            bubbles: true,
-            cancelable: true
-        });
+            const keypressEvent = new KeyboardEvent('keypress', {
+                key: char,
+                code: this.getKeyCode(char),
+                keyCode: char.charCodeAt(0),
+                which: char.charCodeAt(0),
+                bubbles: true,
+                cancelable: true,
+                composed: true
+            });
 
-        const inputEvent = new InputEvent('input', {
-            data: char,
-            inputType: 'insertText',
-            bubbles: true,
-            cancelable: true
-        });
+            const keyupEvent = new KeyboardEvent('keyup', {
+                key: char,
+                code: this.getKeyCode(char),
+                keyCode: char.charCodeAt(0),
+                which: char.charCodeAt(0),
+                bubbles: true,
+                cancelable: true,
+                composed: true
+            });
 
-        // Dispatch events
-        element.dispatchEvent(keydownEvent);
-        element.dispatchEvent(inputEvent);
-        element.dispatchEvent(keyupEvent);
+            const inputEvent = new InputEvent('input', {
+                data: char,
+                inputType: 'insertText',
+                bubbles: true,
+                cancelable: false,
+                composed: true
+            });
 
-        // Also try to directly insert the character
-        if (element.textContent !== undefined) {
-            element.textContent += char;
-        } else if (element.value !== undefined) {
-            element.value += char;
+            const beforeInputEvent = new InputEvent('beforeinput', {
+                data: char,
+                inputType: 'insertText',
+                bubbles: true,
+                cancelable: true,
+                composed: true
+            });
+
+            // Dispatch events in the correct order
+            element.dispatchEvent(keydownEvent);
+            element.dispatchEvent(beforeInputEvent);
+            element.dispatchEvent(keypressEvent);
+            element.dispatchEvent(inputEvent);
+            element.dispatchEvent(keyupEvent);
         }
     }
 

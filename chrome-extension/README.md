@@ -27,7 +27,20 @@ A Chrome extension that automatically writes essays in Google Docs using AI.
 
 ## Setup
 
-**No setup required!** The extension comes pre-configured with an API key and is ready to use immediately.
+### Getting Your OpenAI API Key
+
+1. Visit [OpenAI Platform](https://platform.openai.com/)
+2. Sign up or log in to your account
+3. Navigate to the API Keys section
+4. Create a new API key
+5. Copy the key (it starts with `sk-...`)
+
+### Configuring the Extension
+
+1. **Click the EssayForge extension icon** in your toolbar
+2. **Enter your OpenAI API key** in the Settings section
+3. **Click "Save API Key"**
+4. You're ready to use the extension!
 
 ## How to Use
 
@@ -38,8 +51,6 @@ A Chrome extension that automatically writes essays in Google Docs using AI.
 5. **Choose your settings** (typing speed, essay length)
 6. **Click "Start Writing Essay"**
 7. **Watch the AI write your essay** in real-time!
-
-**That's it!** No API key setup needed - just install and start writing!
 
 ## Settings
 
@@ -55,10 +66,11 @@ A Chrome extension that automatically writes essays in Google Docs using AI.
 
 ## Privacy & Security
 
-- **Pre-configured**: API key is embedded for seamless user experience
+- **Your API Key**: Stored securely in your browser using Chrome's sync storage
 - **No Data Collection**: We don't collect or store your essay content
 - **Direct API Calls**: All AI requests go directly to OpenAI
 - **Secure**: Uses HTTPS for all API communications
+- **Local Storage**: All settings and data remain on your device
 
 ## Troubleshooting
 
@@ -69,9 +81,10 @@ A Chrome extension that automatically writes essays in Google Docs using AI.
 - Ensure you have an active internet connection
 
 ### API Issues?
-- The extension uses a pre-configured API key
-- If you encounter API errors, the key may need to be updated
-- Contact support if you experience persistent issues
+- Make sure your OpenAI API key is correctly entered and saved
+- Check that your API key has available credits
+- Verify your internet connection is stable
+- Check the browser console for specific error messages
 
 ### Typing Not Working?
 - Ensure the Google Docs editor is focused

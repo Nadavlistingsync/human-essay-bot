@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Google Docs Simulation</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+        }
+        
+        h1 {
+            color: #333;
+        }
+        
+        .editor-container {
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            padding: 20px;
+            min-height: 400px;
+            background: white;
+        }
+        
+        .editor {
+            min-height: 400px;
+            padding: 20px;
+            outline: none;
+            font-size: 14px;
+            line-height: 1.6;
+            white-space: pre-wrap;
+        }
+        
+        .editor:focus {
+            background: #f9f9f9;
+        }
+        
+        .info {
+            background: #e3f2fd;
+            padding: 15px;
+            border-radius: 4px;
+            margin-bottom: 20px;
+        }
+        
+        .info h3 {
+            margin-top: 0;
+            color: #1976d2;
+        }
+        
+        .info ul {
+            margin: 10px 0;
+            padding-left: 20px;
+        }
+    </style>
+</head>
+<body>
+    <h1>🧪 Google Docs Extension Test Page</h1>
+    
+    <div class="info">
+        <h3>📋 Test Instructions</h3>
+        <ul>
+            <li>This page simulates a Google Docs editor for testing</li>
+            <li>Load the EssayForge extension in Chrome</li>
+            <li>Click the extension icon and test the functionality</li>
+            <li>The contenteditable div below simulates the Google Docs editor</li>
+        </ul>
+    </div>
+    
+    <div class="editor-container">
+        <div class="editor" contenteditable="true" role="textbox" spellcheck="true">
+            Click here to start typing...
+        </div>
+    </div>
+    
+    <script>
+        // Clear placeholder text on first click
+        const editor = document.querySelector('.editor');
+        editor.addEventListener('focus', function() {
+            if (this.textContent === 'Click here to start typing...') {
+                this.textContent = '';
+            }
+        }, { once: true });
+        
+        // Log typing events for debugging
+        editor.addEventListener('input', (e) => {
+            console.log('Input event:', e.data);
+        });
+        
+        editor.addEventListener('keydown', (e) => {
+            console.log('Keydown event:', e.key);
+        });
+        
+        console.log('Test page loaded. Extension should detect this as a valid editor.');
+    </script>
+</body>
+</html>
+

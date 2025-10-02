@@ -20,13 +20,17 @@ class PopupApp {
             progressText: document.getElementById('progress-text'),
             statusIndicator: document.getElementById('status-indicator'),
             statusText: document.querySelector('.status-text'),
-            statusDot: document.querySelector('.status-dot')
+            statusDot: document.querySelector('.status-dot'),
+            apiKey: document.getElementById('api-key'),
+            saveApiKeyBtn: document.getElementById('save-api-key'),
+            apiKeyStatus: document.getElementById('api-key-status')
         };
     }
 
     setupEventListeners() {
         this.elements.startBtn.addEventListener('click', () => this.startWriting());
         this.elements.stopBtn.addEventListener('click', () => this.stopWriting());
+        this.elements.saveApiKeyBtn.addEventListener('click', () => this.saveApiKey());
     }
 
     async checkCurrentTab() {
@@ -48,7 +52,7 @@ class PopupApp {
 
     async loadSettings() {
         try {
-            const result = await chrome.storage.sync.get(['typingSpeed', 'essayLength']);
+            const result = await chrome.storage.sync.get(['typingSpeed', 'essayLength', 'apiKey']);
             
             if (result.typingSpeed) {
                 this.elements.typingSpeed.value = result.typingSpeed;
@@ -57,11 +61,45 @@ class PopupApp {
             if (result.essayLength) {
                 this.elements.essayLength.value = result.essayLength;
             }
+
+            if (result.apiKey) {
+                this.elements.apiKey.value = result.apiKey;
+                this.showApiKeyStatus('API key loaded ✓', 'success');
+            } else {
+                this.showApiKeyStatus('Please enter your OpenAI API key', 'warning');
+            }
         } catch (error) {
             console.error('Error loading settings:', error);
         }
     }
 
+    async saveApiKey() {
+        const apiKey = this.elements.apiKey.value.trim();
+        
+        if (!apiKey) {
+            this.showApiKeyStatus('Please enter a valid API key', 'error');
+            return;
+        }
+
+        if (!apiKey.startsWith('sk-')) {
+            this.showApiKeyStatus('Invalid API key format', 'error');
+            return;
+        }
+
+        try {
+            await chrome.storage.sync.set({ apiKey });
+            this.showApiKeyStatus('API key saved successfully! ✓', 'success');
+        } catch (error) {
+            console.error('Error saving API key:', error);
+            this.showApiKeyStatus('Error saving API key', 'error');
+        }
+    }
+
+    showApiKeyStatus(message, type) {
+        this.elements.apiKeyStatus.textContent = message;
+        this.elements.apiKeyStatus.className = `api-key-status ${type}`;
+        this.elements.apiKeyStatus.style.display = 'block';
+    }
 
     async startWriting() {
         if (this.isWriting) return;
@@ -73,7 +111,13 @@ class PopupApp {
             return;
         }
 
-        // API key is embedded, no need to check
+        // Check if API key is set
+        const { apiKey } = await chrome.storage.sync.get('apiKey');
+        if (!apiKey) {
+            this.updateStatus('error', 'Please set your OpenAI API key first');
+            this.showApiKeyStatus('⚠️ API key required! Please enter and save your key above', 'error');
+            return;
+        }
 
         this.isWriting = true;
         this.updateUI(true);

@@ -71,15 +71,26 @@
             <div class="settings-section">
                 <h3>⚙️ Settings</h3>
                 <div class="form-group">
-                    <p class="settings-info">🔑 API key is pre-configured - ready to use!</p>
+                    <label for="api-key">🔑 OpenAI API Key:</label>
+                    <input 
+                        type="password" 
+                        id="api-key" 
+                        placeholder="sk-..." 
+                        autocomplete="off"
+                    >
+                    <button id="save-api-key" class="btn btn-outline" style="margin-top: 0.5rem; width: 100%;">
+                        💾 Save API Key
+                    </button>
+                    <p id="api-key-status" class="api-key-status" style="display: none;"></p>
                 </div>
             </div>
 
             <div class="help-section">
                 <h3>❓ How to Use</h3>
                 <ol>
+                    <li>Enter and save your OpenAI API key above</li>
                     <li>Open a Google Doc</li>
-                    <li>Enter your essay prompt above</li>
+                    <li>Enter your essay prompt</li>
                     <li>Click "Start Writing Essay"</li>
                     <li>Watch the AI write your essay!</li>
                 </ol>
