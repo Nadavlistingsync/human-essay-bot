@@ -162,8 +162,9 @@ Write the essay content only, without any meta-commentary or instructions.`;
             const progress = 50 + (currentSentence / totalSentences) * 40; // 50-90%
             this.sendProgressUpdate(progress, `Typing sentence ${currentSentence} of ${totalSentences}...`);
             
-            // Add a pause between sentences
-            await this.delay(this.getTypingDelay('sentence'));
+            // Add a realistic pause between sentences (longer than character delays)
+            const sentenceDelay = this.getTypingDelay('sentence') * 3; // 3x longer than normal
+            await this.delay(sentenceDelay);
         }
     }
 
@@ -264,9 +265,9 @@ Write the essay content only, without any meta-commentary or instructions.`;
 
     getTypingDelay(char) {
         const speedMap = {
-            'slow': { min: 150, max: 300 },
-            'medium': { min: 80, max: 150 },
-            'fast': { min: 30, max: 80 }
+            'slow': { min: 200, max: 400 },
+            'medium': { min: 120, max: 250 },
+            'fast': { min: 80, max: 150 }
         };
 
         const speed = speedMap[this.typingSpeed] || speedMap['medium'];
@@ -274,21 +275,28 @@ Write the essay content only, without any meta-commentary or instructions.`;
 
         // Adjust delay based on character type
         if (char === ' ') {
-            baseDelay *= 0.8;
+            baseDelay *= 0.7; // Faster for spaces
         } else if (char === '.' || char === '!' || char === '?') {
-            baseDelay *= 1.5;
+            baseDelay *= 2.0; // Longer pause after sentences
         } else if (char === ',' || char === ';' || char === ':') {
-            baseDelay *= 1.2;
+            baseDelay *= 1.5; // Medium pause after commas
         } else if (char.match(/[A-Z]/)) {
-            baseDelay *= 1.1;
+            baseDelay *= 1.3; // Slightly longer for capitals
+        } else if (char.match(/[0-9]/)) {
+            baseDelay *= 1.2; // Numbers take a bit longer
         }
 
         // Add occasional longer pauses (thinking pauses)
-        if (Math.random() < 0.05) {
-            baseDelay += Math.random() * 1000;
+        if (Math.random() < 0.08) {
+            baseDelay += Math.random() * 800 + 200; // 200-1000ms thinking pause
         }
 
-        return baseDelay;
+        // Add micro-pauses for more realistic typing
+        if (Math.random() < 0.15) {
+            baseDelay += Math.random() * 50 + 10; // 10-60ms micro-pause
+        }
+
+        return Math.max(baseDelay, 50); // Minimum 50ms delay
     }
 
     delay(ms) {

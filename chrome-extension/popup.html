@@ -36,9 +36,9 @@
                 <div class="form-group">
                     <label for="typing-speed">⚡ Typing Speed:</label>
                     <select id="typing-speed">
-                        <option value="slow">🐌 Slow (Human-like)</option>
-                        <option value="medium" selected>🚀 Medium</option>
-                        <option value="fast">⚡ Fast</option>
+                        <option value="slow">🐌 Slow (200-400ms per char)</option>
+                        <option value="medium" selected>🚀 Medium (120-250ms per char)</option>
+                        <option value="fast">⚡ Fast (80-150ms per char)</option>
                     </select>
                 </div>
 
@@ -85,14 +85,69 @@
                 </div>
             </div>
 
+            <div class="browser-control-section">
+                <h3>🌐 Browser Control</h3>
+                
+                <div class="control-group">
+                    <h4>Navigation</h4>
+                    <div class="nav-controls">
+                        <button id="nav-back" class="btn btn-outline">⬅️ Back</button>
+                        <button id="nav-forward" class="btn btn-outline">➡️ Forward</button>
+                        <button id="nav-refresh" class="btn btn-outline">🔄 Refresh</button>
+                        <button id="nav-new-tab" class="btn btn-outline">➕ New Tab</button>
+                    </div>
+                </div>
+
+                <div class="control-group">
+                    <h4>Page Actions</h4>
+                    <div class="action-controls">
+                        <button id="take-screenshot" class="btn btn-outline">📸 Screenshot</button>
+                        <button id="scroll-down" class="btn btn-outline">⬇️ Scroll Down</button>
+                        <button id="scroll-up" class="btn btn-outline">⬆️ Scroll Up</button>
+                        <button id="bookmark-page" class="btn btn-outline">🔖 Bookmark</button>
+                    </div>
+                </div>
+
+                <div class="control-group">
+                    <h4>Tab Management</h4>
+                    <div class="tab-controls">
+                        <button id="show-tabs" class="btn btn-outline">📑 Show Tabs</button>
+                        <button id="close-current-tab" class="btn btn-outline">❌ Close Tab</button>
+                    </div>
+                    <div id="tabs-list" class="tabs-list" style="display: none;"></div>
+                </div>
+
+                <div class="control-group">
+                    <h4>Automation</h4>
+                    <div class="automation-controls">
+                        <button id="start-recording" class="btn btn-outline">🔴 Start Recording</button>
+                        <button id="stop-recording" class="btn btn-outline" style="display: none;">⏹️ Stop Recording</button>
+                        <button id="playback-actions" class="btn btn-outline">▶️ Playback</button>
+                        <button id="clear-recording" class="btn btn-outline">🗑️ Clear</button>
+                    </div>
+                </div>
+
+                <div class="control-group">
+                    <h4>Quick Actions</h4>
+                    <div class="quick-controls">
+                        <input type="text" id="custom-url" placeholder="Enter URL to navigate..." />
+                        <button id="navigate-url" class="btn btn-outline">🚀 Go</button>
+                    </div>
+                    <div class="quick-controls">
+                        <input type="text" id="element-selector" placeholder="CSS selector (e.g., #button)" />
+                        <button id="click-selector" class="btn btn-outline">👆 Click</button>
+                    </div>
+                </div>
+            </div>
+
             <div class="help-section">
                 <h3>❓ How to Use</h3>
                 <ol>
                     <li>Enter and save your OpenAI API key above</li>
-                    <li>Open a Google Doc</li>
-                    <li>Enter your essay prompt</li>
-                    <li>Click "Start Writing Essay"</li>
-                    <li>Watch the AI write your essay!</li>
+                    <li>Open a Google Doc or any webpage</li>
+                    <li>Use browser controls to navigate and interact</li>
+                    <li>For essays: Enter your prompt and click "Start Writing Essay"</li>
+                    <li>Watch the AI write your essay or control the browser!</li>
                 </ol>
             </div>
         </main>

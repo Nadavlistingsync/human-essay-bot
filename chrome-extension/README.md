@@ -55,9 +55,9 @@ A Chrome extension that automatically writes essays in Google Docs using AI.
 ## Settings
 
 ### Typing Speed
-- **🐌 Slow**: Human-like typing (150-300ms per character)
-- **🚀 Medium**: Moderate speed (80-150ms per character)
-- **⚡ Fast**: Quick typing (30-80ms per character)
+- **🐌 Slow**: Very human-like typing (200-400ms per character)
+- **🚀 Medium**: Balanced speed (120-250ms per character)
+- **⚡ Fast**: Quick but natural typing (80-150ms per character)
 
 ### Essay Length
 - **📄 Short**: 300-500 words
