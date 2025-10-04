@@ -559,7 +559,7 @@ app.post('/api/analyze-style', async (req, res) => {
         // For web version, we'll analyze text content directly
         if (req.body.textContent) {
             const analyzer = new WritingStyleAnalyzer();
-            const style = await analyzer.analyzeText(req.body.textContent);
+            const style = analyzer.analyzeContent(req.body.textContent);
             res.json({ success: true, style });
         } else {
             res.json({ success: false, error: 'No text content provided for analysis' });
