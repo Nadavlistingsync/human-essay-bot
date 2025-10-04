@@ -13,7 +13,8 @@
     "build-mac": "electron-builder --mac",
     "update-extension": "node update-extension-key.js",
     "build-linux": "electron-builder --linux",
-    "dist": "npm run build && electron-builder --publish=never"
+    "dist": "npm run build && electron-builder --publish=never",
+    "deploy": "git push origin main"
   },
   "dependencies": {
     "canvas": "^3.2.0",
@@ -23,7 +24,7 @@
     "random-js": "^2.1.0"
   },
   "devDependencies": {
-    "electron": "^38.1.2",
+    "electron": "^38.2.1",
     "electron-builder": "^26.0.12",
     "nodemon": "^3.0.2"
   },
