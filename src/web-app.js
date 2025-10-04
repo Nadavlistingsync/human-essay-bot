@@ -378,7 +378,7 @@ class WebApp {
         contentSection.innerHTML = `
             <div class="content-header">
                 <h3>📝 Generated Essay Content</h3>
-                <button class="copy-btn" onclick="navigator.clipboard.writeText(this.nextElementSibling.textContent)">📋 Copy to Clipboard</button>
+                <button class="copy-btn" onclick="navigator.clipboard.writeText(this.parentElement.nextElementSibling.textContent)">📋 Copy to Clipboard</button>
             </div>
             <div class="content-text">${content}</div>
             <div class="content-footer">
