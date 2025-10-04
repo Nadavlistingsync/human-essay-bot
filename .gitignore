@@ -55,3 +55,4 @@ packages/
 # Chrome extension with API key
 chrome-extension/content.js
 essayforge-extension*.zip
+.vercel

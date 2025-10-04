@@ -299,7 +299,7 @@ class HumanEssayBot {
         // Get the current domain to determine the server URL
         const serverUrl = window.location.hostname === 'localhost' 
             ? 'http://localhost:3001' 
-            : (window.location.protocol === 'https:' ? 'https://human-essay-bot-production.up.railway.app' : window.location.origin);
+            : 'https://human-essay-bot.loca.lt';
 
         const response = await fetch(`${serverUrl}/api/generate-essay`, {
             method: 'POST',

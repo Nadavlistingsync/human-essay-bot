@@ -1,0 +1,19 @@
+{
+  "name": "human-essay-bot",
+  "version": 2,
+  "builds": [
+    {
+      "src": "web-version.js",
+      "use": "@vercel/node"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/(.*)",
+      "dest": "/web-version.js"
+    }
+  ],
+  "env": {
+    "NODE_ENV": "production"
+  }
+}
