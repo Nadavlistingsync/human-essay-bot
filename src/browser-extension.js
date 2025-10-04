@@ -299,7 +299,7 @@ class HumanEssayBot {
         // Get the current domain to determine the server URL
         const serverUrl = window.location.hostname === 'localhost' 
             ? 'http://localhost:3001' 
-            : 'https://human-essay-pwi37bovt-xeinst.vercel.app';
+            : 'https://human-essay-hlfmcss7k-xeinst.vercel.app';
 
         const response = await fetch(`${serverUrl}/api/generate-essay`, {
             method: 'POST',
